@@ -1,0 +1,48 @@
+{
+  "name": "work-designer-platform",
+  "version": "0.0.1",
+  "description": "",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "pnpm -F packages/ui dev",
+    "prepare": "husky",
+    "commit": "git-cz",
+    "release": "standard-version",
+    "release:first": "standard-version --first-release",
+    "release:patch": "standard-version --release patch",
+    "release:minor": "standard-version --release minor",
+    "release:major": "standard-version --release major",
+    "release:beta": "standard-version --prerelease beta",
+    "release:alpha": "standard-version --prerelease alpha",
+    "release:prepatch": "standard-version --prerelease prepatch",
+    "release:preminor": "standard-version --prerelease preminor",
+    "release:premajor": "standard-version --prerelease premajor"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@commitlint/cli": "^19.6.0",
+    "@commitlint/config-conventional": "^19.6.0",
+    "@commitlint/cz-commitlint": "^19.5.0",
+    "@eslint/js": "catalog:eslint@js",
+    "commitizen": "catalog:",
+    "eslint": "catalog:",
+    "globals": "^15.13.0",
+    "husky": "catalog:",
+    "lint-staged": "catalog:",
+    "prettier": "catalog:",
+    "standard-version": "catalog:",
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:"
+  },
+  "config": {
+    "commitizen": {
+      "path": "@commitlint/cz-commitlint"
+    }
+  }
+}

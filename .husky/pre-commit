@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+echo "🚨 lint ... 🚧🚧🚧"
+pnpm exec lint-staged
+echo "✅ finished 🎉🎉🎉"

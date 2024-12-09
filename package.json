@@ -8,7 +8,7 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "pnpm -F packages/ui dev",
+    "dev": "pnpm -F ui dev",
     "prepare": "husky",
     "commit": "git-cz",
     "release": "standard-version",
@@ -29,7 +29,7 @@
     "@commitlint/cli": "^19.6.0",
     "@commitlint/config-conventional": "^19.6.0",
     "@commitlint/cz-commitlint": "^19.5.0",
-    "@eslint/js": "catalog:eslint@js",
+    "@eslint/js": "^9.16.0",
     "commitizen": "catalog:",
     "eslint": "catalog:",
     "globals": "^15.13.0",

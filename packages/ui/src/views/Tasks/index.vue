@@ -17,7 +17,7 @@ defineOptions({
         <span class="text-sm">操作</span>
       </div>
       <div class="flex flex-row items-center gap-2">
-        <el-button type="primary" size="small">新建任务</el-button>
+        <a-button type="primary" size="small">新建任务</a-button>
       </div>
     </div>
   </div>

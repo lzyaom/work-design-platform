@@ -1,6 +1,17 @@
-import { RouteRecordRaw } from 'vue-router'
+import type { RouteRecordRaw } from 'vue-router'
+
+declare module 'vue-router' {
+  interface RouteMeta {
+    requiresAuth: boolean
+    title: string
+  }
+}
 
 export default [
+  {
+    path: '/',
+    redirect: '/dashboard',
+  },
   {
     path: '/login',
     name: 'Login',
@@ -22,11 +33,28 @@ export default [
   {
     path: '/dashboard',
     name: 'Dashboard',
-    component: () => import(/* webpackChunkName: "dashboard" */ '../views/Dashboard.vue'),
     meta: {
       requiresAuth: true,
       title: '仪表盘',
     },
+    children: [
+      {
+        path: 'overview',
+        name: 'DashboardOverview',
+        component: () => import('../views/Dashboard/Overview.vue'),
+        meta: {
+          title: '概览',
+        },
+      },
+      {
+        path: 'analysis',
+        name: 'DashboardAnalysis',
+        component: () => import('../views/Dashboard/Analysis.vue'),
+        meta: {
+          title: '分析',
+        },
+      },
+    ],
   },
   {
     path: '/design',

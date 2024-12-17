@@ -6,7 +6,7 @@ import DefaultSidebar from './components/sidebar/DefaultSidebar.vue'
 import { ref } from 'vue'
 
 const route = useRoute()
-const isDesignPage = computed(() => route.name === 'Design')
+const isDesignPage = computed(() => route.name === 'DesignEditor')
 
 // 侧边栏折叠状态
 const sidebarCollapsed = ref(false)
@@ -55,7 +55,7 @@ const handleCollapse = (collapsed: boolean) => {
           <DefaultSidebar @collapse="handleCollapse" />
         </aside>
 
-        <main class="flex-1 overflow-y-auto p-6">
+        <main class="flex-1 overflow-y-auto">
           <router-view />
         </main>
       </div>

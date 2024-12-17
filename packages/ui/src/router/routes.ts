@@ -4,6 +4,11 @@ declare module 'vue-router' {
   interface RouteMeta {
     requiresAuth: boolean
     title: string
+    hideInMenu?: boolean
+    icon?: string
+    hideInBreadcrumb?: boolean
+    hideInTab?: boolean
+    hideInSidebar?: boolean
   }
 }
 
@@ -59,20 +64,58 @@ export default [
   {
     path: '/design',
     name: 'Design',
-    component: () => import(/* webpackChunkName: "design" */ '../views/Design/index.vue'),
     meta: {
       requiresAuth: true,
-      title: '设计',
+      hideInMenu: true,
     },
+    children: [
+      {
+        path: '',
+        name: 'DesignList',
+        component: () => import(/* webpackChunkName: "design" */ '../views/Design/index.vue'),
+        meta: {
+          title: '设计',
+          hideInMenu: false,
+        },
+      },
+      {
+        path: 'editor',
+        name: 'DesignEditor',
+        component: () => import('../views/Design/editor/index.vue'),
+        meta: {
+          title: '设计空间',
+          hideInMenu: true,
+        },
+      },
+    ],
   },
   {
     path: '/program',
     name: 'Program',
-    component: () => import(/* webpackChunkName: "profile" */ '../views/Program/index.vue'),
     meta: {
       requiresAuth: true,
-      title: '编程',
+      hideInMenu: true,
     },
+    children: [
+      {
+        path: '',
+        name: 'ProgramList',
+        component: () => import(/* webpackChunkName: "program" */ '../views/Program/index.vue'),
+        meta: {
+          title: '编程',
+          hideInMenu: false,
+        },
+      },
+      {
+        path: 'editor',
+        name: 'ProgramEditor',
+        component: () => import('../views/Program/editor/index.vue'),
+        meta: {
+          title: '编程空间',
+          hideInMenu: true,
+        },
+      },
+    ],
   },
   {
     path: '/tasks',

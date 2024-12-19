@@ -129,7 +129,7 @@ export default [
   {
     path: '/monitor',
     name: 'Monitor',
-    component: () => import(/* webpackChunkName: "profile" */ '../views/Monitor/index.vue'),
+    component: () => import(/* webpackChunkName: "profile" */ '../views/Monitor/index.tsx'),
     meta: {
       requiresAuth: true,
       title: '监控',

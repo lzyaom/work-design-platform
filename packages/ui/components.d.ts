@@ -16,6 +16,7 @@ declare module 'vue' {
     ACol: typeof import('ant-design-vue/es')['Col']
     ADescriptions: typeof import('ant-design-vue/es')['Descriptions']
     ADescriptionsItem: typeof import('ant-design-vue/es')['DescriptionsItem']
+    ADrawer: typeof import('ant-design-vue/es')['Drawer']
     ADropdown: typeof import('ant-design-vue/es')['Dropdown']
     ADropdownButton: typeof import('ant-design-vue/es')['DropdownButton']
     AForm: typeof import('ant-design-vue/es')['Form']

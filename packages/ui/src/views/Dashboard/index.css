@@ -1,0 +1,224 @@
+.dashboard-container {
+  @apply p-6 bg-gray-50 min-h-screen;
+}
+
+/* 卡片样式 */
+:deep(.ant-card) {
+  @apply rounded-lg border-0 relative overflow-hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+}
+
+:deep(.ant-card:hover) {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+:deep(.ant-card:hover .icon-wrapper) {
+  transform: scale(1.1);
+}
+
+/* 统计卡片样式 */
+.stat-card {
+  position: relative;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--ant-primary-color), var(--ant-primary-5));
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.stat-card:hover::before {
+  opacity: 1;
+}
+
+/* 统计数字样式 */
+:deep(.ant-statistic-content-value) {
+  @apply text-2xl font-bold;
+  background: linear-gradient(45deg, var(--ant-primary-color), var(--ant-primary-5));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  transition: all 0.3s;
+}
+
+:deep(.ant-statistic-content-suffix) {
+  @apply ml-2 text-base font-medium;
+  transition: all 0.3s;
+}
+
+/* 图标样式 */
+.icon-wrapper {
+  @apply flex items-center justify-center w-12 h-12 rounded-lg;
+  background: linear-gradient(135deg, rgba(24, 144, 255, 0.1) 0%, rgba(24, 144, 255, 0.05) 100%);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.icon-wrapper::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.icon-wrapper:hover::after {
+  opacity: 1;
+}
+
+/* 图标颜色样式 */
+.icon-primary .icon-wrapper {
+  background: linear-gradient(135deg, rgba(24, 144, 255, 0.1) 0%, rgba(24, 144, 255, 0.05) 100%);
+}
+
+.icon-success .icon-wrapper {
+  background: linear-gradient(135deg, rgba(82, 196, 26, 0.1) 0%, rgba(82, 196, 26, 0.05) 100%);
+}
+
+.icon-warning .icon-wrapper {
+  background: linear-gradient(135deg, rgba(250, 173, 20, 0.1) 0%, rgba(250, 173, 20, 0.05) 100%);
+}
+
+.icon-purple .icon-wrapper {
+  background: linear-gradient(135deg, rgba(114, 46, 209, 0.1) 0%, rgba(114, 46, 209, 0.05) 100%);
+}
+
+/* 数值变化动画 */
+@keyframes number-increase {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.number-animate {
+  animation: number-increase 0.5s ease-out forwards;
+}
+
+/* 百分比变化样式 */
+.percent-change {
+  @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-sm;
+  transition: all 0.3s;
+}
+
+.percent-change-positive {
+  @apply bg-green-50 text-green-600;
+}
+
+.percent-change-negative {
+  @apply bg-red-50 text-red-600;
+}
+
+/* 文本颜色样式 */
+.text-primary {
+  color: var(--ant-primary-color);
+}
+
+.text-success {
+  color: var(--ant-success-color);
+}
+
+.text-error {
+  color: var(--ant-error-color);
+}
+
+.text-warning {
+  color: var(--ant-warning-color);
+}
+
+.text-purple {
+  color: var(--ant-purple-color);
+}
+
+/* 按钮样式 */
+:deep(.ant-btn) {
+  @apply rounded-lg;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.3s;
+}
+
+:deep(.ant-btn:not(.ant-btn-link):hover) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+:deep(.ant-btn .anticon) {
+  margin-right: 0;
+  line-height: 1;
+}
+
+/* Radio 按钮组样式 */
+:deep(.ant-radio-button-wrapper) {
+  @apply rounded-lg;
+  transition: all 0.3s;
+}
+
+:deep(.ant-radio-button-wrapper:first-child) {
+  border-radius: 8px 0 0 8px;
+}
+
+:deep(.ant-radio-button-wrapper:last-child) {
+  border-radius: 0 8px 8px 0;
+}
+
+:deep(.ant-radio-button-wrapper .anticon) {
+  margin-right: 0;
+}
+
+/* Switch 开关样式 */
+:deep(.ant-switch) {
+  margin: 0 4px;
+}
+
+/* 图表容器样式 */
+.chart-container {
+  @apply rounded-lg overflow-hidden;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* 工具栏样式 */
+.toolbar-card {
+  @apply mb-4 bg-white rounded-lg;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* 分割线样式 */
+:deep(.ant-divider) {
+  @apply my-4 border-gray-200;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .dashboard-container {
+    @apply p-4;
+  }
+
+  :deep(.ant-statistic-content-value) {
+    @apply text-xl;
+  }
+
+  :deep(.ant-card-body) {
+    @apply p-4;
+  }
+}

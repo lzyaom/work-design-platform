@@ -46,7 +46,7 @@ export default [
       {
         path: 'overview',
         name: 'DashboardOverview',
-        component: () => import('../views/Dashboard/Overview.vue'),
+        component: () => import('../views/Dashboard/Overview.tsx'),
         meta: {
           title: '概览',
         },
@@ -120,7 +120,7 @@ export default [
   {
     path: '/tasks',
     name: 'Tasks',
-    component: () => import(/* webpackChunkName: "profile" */ '../views/Tasks/index.vue'),
+    component: () => import(/* webpackChunkName: "profile" */ '../views/Tasks/index.tsx'),
     meta: {
       requiresAuth: true,
       title: '任务列表',
@@ -138,7 +138,7 @@ export default [
   {
     path: '/logs',
     name: 'Logs',
-    component: () => import(/* webpackChunkName: "profile" */ '../views/Log/index.vue'),
+    component: () => import(/* webpackChunkName: "profile" */ '../views/Log/index.tsx'),
     meta: {
       requiresAuth: true,
       title: '日志',

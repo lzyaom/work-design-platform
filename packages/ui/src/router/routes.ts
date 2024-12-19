@@ -138,7 +138,7 @@ export default [
   {
     path: '/logs',
     name: 'Logs',
-    component: () => import(/* webpackChunkName: "profile" */ '../views/Logs/index.vue'),
+    component: () => import(/* webpackChunkName: "profile" */ '../views/Log/index.vue'),
     meta: {
       requiresAuth: true,
       title: '日志',

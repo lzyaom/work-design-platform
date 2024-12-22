@@ -1,0 +1,110 @@
+/* 属性面板容器 */
+.property-panel {
+  @apply h-full flex flex-col bg-white/60 backdrop-blur-md;
+}
+
+/* 属性标签页 */
+.property-tabs {
+  @apply flex-1 overflow-hidden;
+}
+
+.property-tabs .ant-tabs-content {
+  @apply h-full overflow-auto;
+}
+
+.property-tabs .ant-tabs-tabpane {
+  @apply p-4;
+}
+
+.property-tabs .ant-tabs-nav {
+  @apply mb-0 px-4;
+}
+
+/* 属性表单 */
+.property-form {
+  @apply space-y-4;
+}
+
+.property-form .ant-form-item {
+  @apply mb-4;
+}
+
+.property-form .ant-form-item-label {
+  @apply pb-1;
+}
+
+.property-form .ant-form-item-label > label {
+  @apply text-sm text-gray-600;
+}
+
+/* 事件配置区域 */
+.event-config {
+  @apply mt-6 pt-4 border-t border-gray-100;
+}
+
+/* 颜色选择器 */
+.ant-color-picker-trigger {
+  @apply w-full border border-gray-300 rounded-md;
+}
+
+/* 输入框样式 */
+.property-form .ant-input,
+.property-form .ant-input-number,
+.property-form .ant-select {
+  @apply border border-gray-300 rounded-md;
+}
+
+.property-form .ant-input:hover,
+.property-form .ant-input-number:hover,
+.property-form .ant-select:hover {
+  @apply border-blue-400;
+}
+
+.property-form .ant-input:focus,
+.property-form .ant-input-number:focus,
+.property-form .ant-select:focus {
+  @apply border-blue-400 ring-1 ring-blue-400;
+}
+
+/* 开关样式 */
+.property-form .ant-switch {
+  @apply bg-gray-300;
+}
+
+.property-form .ant-switch-checked {
+  @apply bg-blue-400;
+}
+
+/* 滚动条样式 */
+.property-panel ::-webkit-scrollbar {
+  @apply w-1.5;
+}
+
+.property-panel ::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+.property-panel ::-webkit-scrollbar-thumb {
+  @apply bg-gray-300/80 rounded-full hover:bg-gray-400/80;
+}
+
+/* 表单项动画 */
+.property-form .ant-form-item {
+  @apply transition-all duration-300;
+}
+
+/* 标签页切换动画 */
+.property-tabs .ant-tabs-content {
+  @apply transition-all duration-300;
+}
+
+/* 属性面板响应式调整 */
+@media (max-width: 768px) {
+  .property-panel {
+    @apply fixed right-0 top-0 h-screen w-80 z-50 transform transition-transform duration-300;
+  }
+
+  .property-panel.collapsed {
+    @apply translate-x-full;
+  }
+}

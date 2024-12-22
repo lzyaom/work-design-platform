@@ -72,7 +72,7 @@ export default [
       {
         path: '',
         name: 'DesignList',
-        component: () => import(/* webpackChunkName: "design" */ '../views/Design/index.vue'),
+        component: () => import(/* webpackChunkName: "design" */ '../views/Design/index.tsx'),
         meta: {
           title: '设计',
           hideInMenu: false,
@@ -81,7 +81,7 @@ export default [
       {
         path: 'editor',
         name: 'DesignEditor',
-        component: () => import('../views/Design/editor/index.vue'),
+        component: () => import('../views/Design/editor/index.tsx'),
         meta: {
           title: '设计空间',
           hideInMenu: true,

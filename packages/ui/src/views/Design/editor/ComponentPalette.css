@@ -1,0 +1,85 @@
+/* 组件面板容器 */
+.component-palette {
+  @apply h-full flex flex-col;
+}
+
+/* 组件菜单 */
+.component-menu {
+  @apply flex-1 border-0 bg-transparent;
+}
+
+.component-menu .ant-menu-submenu-title {
+  @apply transition-all duration-300;
+}
+
+.component-menu .ant-menu-submenu-title:hover {
+  @apply bg-white/60;
+}
+
+.component-menu .ant-menu-submenu-selected > .ant-menu-submenu-title {
+  @apply bg-white/80;
+}
+
+/* 组件网格布局 */
+.component-grid {
+  @apply grid grid-cols-2 gap-2 p-2;
+}
+
+/* 组件卡片 */
+.component-card {
+  @apply cursor-move transition-all duration-300;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.component-card:hover {
+  @apply transform -translate-y-0.5;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* 组件项 */
+.component-item {
+  @apply flex flex-col items-center gap-2 p-2;
+}
+
+.component-item i {
+  @apply text-2xl text-gray-600;
+}
+
+.component-item span {
+  @apply text-sm text-gray-700;
+}
+
+/* 拖拽预览 */
+.preview-card {
+  @apply flex flex-col items-center gap-1 p-2 rounded-lg;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.preview-card i {
+  @apply text-xl text-gray-600;
+}
+
+.preview-card span {
+  @apply text-xs text-gray-700;
+}
+
+/* 滚动条样式 */
+.component-palette ::-webkit-scrollbar {
+  @apply w-1.5;
+}
+
+.component-palette ::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+.component-palette ::-webkit-scrollbar-thumb {
+  @apply bg-gray-300/80 rounded-full hover:bg-gray-400/80;
+}

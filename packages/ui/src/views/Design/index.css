@@ -1,0 +1,131 @@
+/* 页面容器 */
+.design-page {
+  @apply min-h-full;
+  /* background: rgba(255, 255, 255, 0.5); */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* 卡片样式 */
+.glass-card {
+  background: rgba(255, 255, 255, 0.7) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  @apply transition-all duration-300;
+}
+
+.glass-card:hover {
+  @apply transform -translate-y-1;
+  background: rgba(255, 255, 255, 0.8) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.glass-card .ant-card-cover img {
+  @apply object-cover h-48 w-full;
+}
+
+.glass-card .ant-card-meta-title {
+  @apply mb-2 text-lg font-medium;
+}
+
+.glass-card .ant-card-meta-description {
+  @apply text-gray-500 line-clamp-2;
+}
+
+/* 新增按钮样式 */
+.add-design-btn {
+  @apply transition-all duration-300;
+  background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+}
+
+.add-design-btn:hover {
+  @apply transform -translate-y-0.5;
+  box-shadow: 0 4px 12px rgba(24, 144, 255, 0.3);
+}
+
+/* 搜索框样式 */
+.search-input {
+  @apply transition-all duration-300;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.search-input:focus {
+  @apply transform -translate-y-0.5;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* 卡片操作按钮样式 */
+.glass-card .action-btn {
+  @apply opacity-0 transition-opacity duration-300;
+}
+
+.glass-card:hover .action-btn {
+  @apply opacity-100;
+}
+
+/* 卡片内容区域样式 */
+.glass-card .ant-card-body {
+  @apply p-4;
+}
+
+/* 模态框样式 */
+.glass-modal .ant-modal-content {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  @apply rounded-lg overflow-hidden border border-white/30;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+.glass-modal .ant-modal-header {
+  @apply border-b border-gray-100/50 pb-4 bg-transparent;
+}
+
+.glass-modal .ant-modal-body {
+  @apply bg-transparent;
+}
+
+.glass-modal .ant-modal-footer {
+  @apply border-t border-gray-100/50 pt-4 bg-transparent;
+}
+
+/* 协作者头像样式 */
+.ant-avatar-group .ant-avatar {
+  @apply transition-all duration-300;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+}
+
+.ant-avatar-group .ant-avatar:hover {
+  @apply transform -translate-y-0.5;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 状态标签样式 */
+.ant-tag {
+  @apply transition-all duration-300;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* 在线状态指示器 */
+.online-indicator {
+  @apply absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-green-400 rounded-full;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.8);
+}
+
+/* 工具提示样式 */
+.ant-tooltip {
+  @apply backdrop-blur-md;
+}
+
+.ant-tooltip-inner {
+  @apply bg-white/90 text-gray-800;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}

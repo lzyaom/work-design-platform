@@ -1,5 +1,23 @@
 .dashboard-container {
-  @apply p-6 bg-gray-50 min-h-screen;
+  @apply p-6 min-h-screen;
+  background: linear-gradient(135deg, #f0f2f5 0%, #e6e9f0 100%);
+  position: relative;
+}
+
+.dashboard-container::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 10% 20%, rgba(24, 144, 255, 0.1) 0%, transparent 20%),
+    radial-gradient(circle at 90% 30%, rgba(82, 196, 26, 0.1) 0%, transparent 20%),
+    radial-gradient(circle at 50% 50%, rgba(250, 173, 20, 0.1) 0%, transparent 30%),
+    radial-gradient(circle at 80% 80%, rgba(114, 46, 209, 0.1) 0%, transparent 20%);
+  pointer-events: none;
+  z-index: 0;
 }
 
 /* 卡片样式 */
@@ -7,12 +25,15 @@
   @apply rounded-lg border-0 relative overflow-hidden;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 :deep(.ant-card:hover) {
   transform: translateY(-4px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  background: rgba(255, 255, 255, 0.8);
 }
 
 :deep(.ant-card:hover .icon-wrapper) {
@@ -22,6 +43,7 @@
 /* 统计卡片样式 */
 .stat-card {
   position: relative;
+  overflow: hidden;
 }
 
 .stat-card::before {
@@ -34,6 +56,17 @@
   background: linear-gradient(90deg, var(--ant-primary-color), var(--ant-primary-5));
   opacity: 0;
   transition: opacity 0.3s;
+}
+
+.stat-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0));
+  pointer-events: none;
 }
 
 .stat-card:hover::before {
@@ -57,7 +90,9 @@
 /* 图标样式 */
 .icon-wrapper {
   @apply flex items-center justify-center w-12 h-12 rounded-lg;
-  background: linear-gradient(135deg, rgba(24, 144, 255, 0.1) 0%, rgba(24, 144, 255, 0.05) 100%);
+  background: linear-gradient(135deg, rgba(24, 144, 255, 0.2), rgba(24, 144, 255, 0.1));
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
@@ -81,19 +116,19 @@
 
 /* 图标颜色样式 */
 .icon-primary .icon-wrapper {
-  background: linear-gradient(135deg, rgba(24, 144, 255, 0.1) 0%, rgba(24, 144, 255, 0.05) 100%);
+  background: linear-gradient(135deg, rgba(24, 144, 255, 0.2), rgba(24, 144, 255, 0.1));
 }
 
 .icon-success .icon-wrapper {
-  background: linear-gradient(135deg, rgba(82, 196, 26, 0.1) 0%, rgba(82, 196, 26, 0.05) 100%);
+  background: linear-gradient(135deg, rgba(82, 196, 26, 0.2), rgba(82, 196, 26, 0.1));
 }
 
 .icon-warning .icon-wrapper {
-  background: linear-gradient(135deg, rgba(250, 173, 20, 0.1) 0%, rgba(250, 173, 20, 0.05) 100%);
+  background: linear-gradient(135deg, rgba(250, 173, 20, 0.2), rgba(250, 173, 20, 0.1));
 }
 
 .icon-purple .icon-wrapper {
-  background: linear-gradient(135deg, rgba(114, 46, 209, 0.1) 0%, rgba(114, 46, 209, 0.05) 100%);
+  background: linear-gradient(135deg, rgba(114, 46, 209, 0.2), rgba(114, 46, 209, 0.1));
 }
 
 /* 数值变化动画 */
@@ -193,14 +228,23 @@
 /* 图表容器样式 */
 .chart-container {
   @apply rounded-lg overflow-hidden;
-  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 /* 工具栏样式 */
 .toolbar-card {
-  @apply mb-4 bg-white rounded-lg;
+  @apply mb-4 rounded-lg;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.toolbar-card :deep(.ant-card-body) {
+  padding: 16px;
 }
 
 /* 分割线样式 */
@@ -221,4 +265,449 @@
   :deep(.ant-card-body) {
     @apply p-4;
   }
+}
+
+/* 图表类型按钮组 */
+.chart-type-group {
+  background: rgba(255, 255, 255, 0.5);
+  padding: 2px;
+  border-radius: 8px;
+}
+
+.chart-type-group :deep(.ant-radio-button-wrapper) {
+  background: transparent;
+  border: none;
+  color: #666;
+}
+
+.chart-type-group :deep(.ant-radio-button-wrapper-checked) {
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--ant-primary-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.chart-type-group :deep(.ant-radio-button-wrapper:not(:first-child)::before) {
+  display: none;
+}
+
+/* 图表操作按钮 */
+.chart-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.action-btn {
+  @apply flex items-center justify-center;
+  width: 32px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.5);
+  border: none;
+  transition: all 0.3s;
+}
+
+.action-btn:hover {
+  background: rgba(255, 255, 255, 0.9);
+  transform: translateY(-2px);
+}
+
+/* 导出按钮 */
+.export-btn {
+  background: rgba(255, 255, 255, 0.5);
+  border-color: var(--ant-primary-color);
+}
+
+.export-btn:hover {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+/* 刷新按钮 */
+.refresh-btn {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.refresh-btn:hover {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+/* 图表配置卡片 */
+.chart-config-card {
+  @apply mb-4 rounded-lg;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.chart-config-card :deep(.ant-card-body) {
+  padding: 16px;
+}
+
+/* 配置项样式 */
+.config-item {
+  @apply flex items-center;
+  padding: 4px 12px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 6px;
+  transition: all 0.3s;
+}
+
+.config-item:hover {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+/* 数据筛选项样式 */
+.data-filter {
+  @apply flex items-center;
+  padding: 4px 12px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 6px;
+  transition: all 0.3s;
+}
+
+.data-filter:hover {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+/* 自定义开关样式 */
+.custom-switch {
+  min-width: 24px;
+  height: 14px;
+}
+
+.custom-switch :deep(.ant-switch-handle) {
+  width: 10px;
+  height: 10px;
+  top: 2px;
+}
+
+.custom-switch:not(:deep(.ant-switch-checked)) :deep(.ant-switch-handle) {
+  left: 2px;
+}
+
+.custom-switch:deep(.ant-switch-checked) :deep(.ant-switch-handle) {
+  left: calc(100% - 12px);
+}
+
+/* 日期选择器样式 */
+:deep(.ant-picker-range) {
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+:deep(.ant-picker-range:hover) {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+/* Select 选择器样式 */
+:deep(.ant-select:not(.ant-select-customize-input) .ant-select-selector) {
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+:deep(.ant-select:not(.ant-select-customize-input) .ant-select-selector:hover) {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+/* 图表控件样式 */
+.chart-controls {
+  @apply flex items-center gap-4;
+  background: rgba(255, 255, 255, 0.5);
+  padding: 4px;
+  border-radius: 8px;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
+.chart-type-group {
+  border-right: 1px solid rgba(0, 0, 0, 0.06);
+  padding-right: 12px;
+  margin-right: 12px;
+}
+
+.chart-type-group :deep(.ant-radio-button-wrapper) {
+  background: transparent;
+  border: none;
+  color: #666;
+  padding: 4px 12px;
+}
+
+.chart-type-group :deep(.ant-radio-button-wrapper-checked) {
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--ant-primary-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.chart-type-group :deep(.ant-radio-button-wrapper:not(:first-child)::before) {
+  display: none;
+}
+
+.chart-config-group {
+  @apply flex items-center gap-3;
+  padding: 0 4px;
+}
+
+/* 数据筛选器样式 */
+.data-filters {
+  @apply flex items-center gap-2;
+  background: rgba(255, 255, 255, 0.5);
+  padding: 4px 8px;
+  border-radius: 6px;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
+.data-filter-item {
+  @apply flex items-center gap-2;
+  padding: 2px 4px;
+  border-radius: 4px;
+  transition: all 0.3s;
+}
+
+.data-filter-item:hover {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+/* 自定义开关样式 */
+.custom-switch {
+  min-width: 20px;
+  height: 12px;
+}
+
+.custom-switch :deep(.ant-switch-handle) {
+  width: 8px;
+  height: 8px;
+  top: 2px;
+}
+
+.custom-switch:not(:deep(.ant-switch-checked)) :deep(.ant-switch-handle) {
+  left: 2px;
+}
+
+.custom-switch:deep(.ant-switch-checked) :deep(.ant-switch-handle) {
+  left: calc(100% - 10px);
+}
+
+/* 工具栏分隔线 */
+:deep(.ant-divider-vertical) {
+  height: 20px;
+  margin: 0 12px;
+  border-color: rgba(0, 0, 0, 0.06);
+}
+
+/* 导出和刷新按钮 */
+.export-btn, .refresh-btn {
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  height: 32px;
+  padding: 0 16px;
+}
+
+.export-btn {
+  border-color: var(--ant-primary-color);
+}
+
+.export-btn:hover, .refresh-btn:hover {
+  background: rgba(255, 255, 255, 0.9);
+  transform: translateY(-2px);
+}
+
+/* Select 选择器样式 */
+:deep(.ant-select:not(.ant-select-customize-input) .ant-select-selector) {
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  height: 32px;
+  border-radius: 6px;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
+:deep(.ant-select:not(.ant-select-customize-input) .ant-select-selector:hover) {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: var(--ant-primary-color);
+}
+
+/* 日期选择器样式 */
+:deep(.ant-picker-range) {
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  height: 32px;
+  border-radius: 6px;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
+:deep(.ant-picker-range:hover) {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: var(--ant-primary-color);
+}
+
+/* 工具栏按钮样式 */
+.setting-btn,
+.filter-btn {
+  @apply flex items-center gap-2;
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  height: 32px;
+  padding: 0 16px;
+  transition: all 0.3s;
+}
+
+.setting-btn:hover,
+.filter-btn:hover {
+  background: rgba(255, 255, 255, 0.9);
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 抽屉样式 */
+:deep(.ant-drawer-content) {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+:deep(.ant-drawer-header) {
+  background: transparent;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+:deep(.ant-drawer-title) {
+  color: var(--ant-primary-color);
+  font-weight: 500;
+}
+
+/* 图表类型选择器样式 */
+.chart-type-section .chart-type-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.chart-type-section .chart-type-group :deep(.ant-radio-button-wrapper) {
+  width: 100%;
+  text-align: left;
+  border-radius: 6px;
+  height: 36px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.chart-type-section .chart-type-group :deep(.ant-radio-button-wrapper-checked) {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: var(--ant-primary-color);
+  color: var(--ant-primary-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.chart-type-section .chart-type-group :deep(.ant-radio-button-wrapper:not(:first-child)::before) {
+  display: none;
+}
+
+/* 图表选项样式 */
+.chart-options-section {
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+/* 数据系列样式 */
+.data-series-section {
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+/* 下拉菜单样式 */
+:deep(.ant-dropdown-menu) {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 8px;
+  padding: 8px;
+}
+
+:deep(.ant-dropdown-menu-item-group-title) {
+  color: var(--ant-primary-color);
+  font-weight: 500;
+  padding: 8px 12px;
+}
+
+:deep(.ant-dropdown-menu-item) {
+  padding: 8px 12px;
+  border-radius: 4px;
+}
+
+:deep(.ant-dropdown-menu-item:hover) {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+/* 图表类型选项样式 */
+.chart-type-item {
+  @apply flex items-center gap-3;
+  color: #666;
+}
+
+.chart-type-item.active {
+  color: var(--ant-primary-color);
+}
+
+.chart-type-item .anticon {
+  font-size: 16px;
+}
+
+/* 图表选项样式 */
+.chart-option-item {
+  @apply flex items-center justify-between;
+  width: 100%;
+  color: #666;
+}
+
+/* 数据筛选项样式 */
+.data-filter-item {
+  @apply flex items-center justify-between;
+  width: 100%;
+  gap: 16px;
+}
+
+/* 工具栏按钮样式 */
+.setting-btn,
+.filter-btn {
+  @apply flex items-center gap-2;
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  height: 32px;
+  padding: 0 16px;
+  transition: all 0.3s;
+}
+
+.setting-btn:hover,
+.filter-btn:hover {
+  background: rgba(255, 255, 255, 0.9);
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.setting-btn .anticon-down,
+.filter-btn .anticon-down {
+  font-size: 12px;
+  margin-left: 4px;
+}
+
+/* 图表控件样式 */
+.chart-controls {
+  @apply flex items-center gap-4;
+  background: rgba(255, 255, 255, 0.5);
+  padding: 4px;
+  border-radius: 8px;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
 }

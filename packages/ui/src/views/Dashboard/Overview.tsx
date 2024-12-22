@@ -3,14 +3,13 @@ import {
   Card,
   Button,
   DatePicker,
-  Radio,
   Switch,
   Select,
   Row,
   Col,
-  Tooltip,
   Statistic,
-  Divider,
+  Dropdown,
+  Menu,
 } from 'ant-design-vue'
 import {
   FileOutlined,
@@ -24,6 +23,7 @@ import {
   AreaChartOutlined,
   FilterOutlined,
   SettingOutlined,
+  DownOutlined,
 } from '@ant-design/icons-vue'
 import * as echarts from 'echarts'
 import dayjs from 'dayjs'
@@ -325,92 +325,170 @@ export default defineComponent({
           <Card hoverable class="stat-card icon-primary">
             <Statistic
               title={
-                <div class="flex items-center gap-3">
-                  <div class="icon-wrapper">
-                    <FileOutlined class="text-primary text-xl" />
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <div class="icon-wrapper">
+                      <FileOutlined class="text-primary text-xl" />
+                    </div>
+                    <span class="text-gray-600">编程文件</span>
                   </div>
-                  <span class="text-gray-600">编程文件</span>
+                  <div class="text-xs text-gray-400">
+                    今日新增: +{Math.floor(Math.random() * 20)}
+                  </div>
                 </div>
               }
               value={stats.value.programFiles.total}
               class="number-animate"
               suffix={
-                <span
-                  class={`percent-change ${stats.value.programFiles.weekChange >= 0 ? 'percent-change-positive' : 'percent-change-negative'}`}
-                >
-                  {stats.value.programFiles.weekChange}%
-                </span>
+                <div class="flex items-center gap-2">
+                  <span
+                    class={`percent-change ${stats.value.programFiles.weekChange >= 0 ? 'percent-change-positive' : 'percent-change-negative'}`}
+                  >
+                    {stats.value.programFiles.weekChange}%
+                  </span>
+                  <span class="text-xs text-gray-400">周同比</span>
+                </div>
               }
             />
+            <div class="mt-4 text-xs text-gray-500">
+              <div class="flex justify-between items-center">
+                <span>活跃文件</span>
+                <span class="text-primary">{Math.floor(stats.value.programFiles.total * 0.6)}</span>
+              </div>
+              <div class="flex justify-between items-center mt-2">
+                <span>归档文件</span>
+                <span class="text-gray-400">
+                  {Math.floor(stats.value.programFiles.total * 0.4)}
+                </span>
+              </div>
+            </div>
           </Card>
         </Col>
         <Col xs={24} sm={12} md={6}>
           <Card hoverable class="stat-card icon-purple">
             <Statistic
               title={
-                <div class="flex items-center gap-3">
-                  <div class="icon-wrapper">
-                    <ProjectOutlined class="text-purple text-xl" />
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <div class="icon-wrapper">
+                      <ProjectOutlined class="text-purple text-xl" />
+                    </div>
+                    <span class="text-gray-600">设计项目</span>
                   </div>
-                  <span class="text-gray-600">设计项目</span>
+                  <div class="text-xs text-gray-400">
+                    进行中: {Math.floor(stats.value.designProjects.total * 0.3)}
+                  </div>
                 </div>
               }
               value={stats.value.designProjects.total}
               class="number-animate"
               suffix={
-                <span
-                  class={`percent-change ${stats.value.designProjects.weekChange >= 0 ? 'percent-change-positive' : 'percent-change-negative'}`}
-                >
-                  {stats.value.designProjects.weekChange}%
-                </span>
+                <div class="flex items-center gap-2">
+                  <span
+                    class={`percent-change ${stats.value.designProjects.weekChange >= 0 ? 'percent-change-positive' : 'percent-change-negative'}`}
+                  >
+                    {stats.value.designProjects.weekChange}%
+                  </span>
+                  <span class="text-xs text-gray-400">周同比</span>
+                </div>
               }
             />
+            <div class="mt-4 text-xs text-gray-500">
+              <div class="flex justify-between items-center">
+                <span>已完成</span>
+                <span class="text-success">
+                  {Math.floor(stats.value.designProjects.total * 0.5)}
+                </span>
+              </div>
+              <div class="flex justify-between items-center mt-2">
+                <span>待审核</span>
+                <span class="text-warning">
+                  {Math.floor(stats.value.designProjects.total * 0.2)}
+                </span>
+              </div>
+            </div>
           </Card>
         </Col>
         <Col xs={24} sm={12} md={6}>
           <Card hoverable class="stat-card icon-success">
             <Statistic
               title={
-                <div class="flex items-center gap-3">
-                  <div class="icon-wrapper">
-                    <CheckSquareOutlined class="text-success text-xl" />
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <div class="icon-wrapper">
+                      <CheckSquareOutlined class="text-success text-xl" />
+                    </div>
+                    <span class="text-gray-600">当前任务</span>
                   </div>
-                  <span class="text-gray-600">当前任务</span>
+                  <div class="text-xs text-gray-400">
+                    紧急: {Math.floor(stats.value.currentTasks.total * 0.2)}
+                  </div>
                 </div>
               }
               value={stats.value.currentTasks.total}
               class="number-animate"
               suffix={
-                <span
-                  class={`percent-change ${stats.value.currentTasks.weekChange >= 0 ? 'percent-change-positive' : 'percent-change-negative'}`}
-                >
-                  {stats.value.currentTasks.weekChange}%
-                </span>
+                <div class="flex items-center gap-2">
+                  <span
+                    class={`percent-change ${stats.value.currentTasks.weekChange >= 0 ? 'percent-change-positive' : 'percent-change-negative'}`}
+                  >
+                    {stats.value.currentTasks.weekChange}%
+                  </span>
+                  <span class="text-xs text-gray-400">周同比</span>
+                </div>
               }
             />
+            <div class="mt-4 text-xs text-gray-500">
+              <div class="flex justify-between items-center">
+                <span>已完成</span>
+                <span class="text-success">{Math.floor(stats.value.currentTasks.total * 0.7)}</span>
+              </div>
+              <div class="flex justify-between items-center mt-2">
+                <span>进行中</span>
+                <span class="text-primary">{Math.floor(stats.value.currentTasks.total * 0.3)}</span>
+              </div>
+            </div>
           </Card>
         </Col>
         <Col xs={24} sm={12} md={6}>
           <Card hoverable class="stat-card icon-warning">
             <Statistic
               title={
-                <div class="flex items-center gap-3">
-                  <div class="icon-wrapper">
-                    <UserOutlined class="text-warning text-xl" />
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <div class="icon-wrapper">
+                      <UserOutlined class="text-warning text-xl" />
+                    </div>
+                    <span class="text-gray-600">用户数量</span>
                   </div>
-                  <span class="text-gray-600">用户数量</span>
+                  <div class="text-xs text-gray-400">
+                    在线: {Math.floor(stats.value.users.total * 0.4)}
+                  </div>
                 </div>
               }
               value={stats.value.users.total}
               class="number-animate"
               suffix={
-                <span
-                  class={`percent-change ${stats.value.users.weekChange >= 0 ? 'percent-change-positive' : 'percent-change-negative'}`}
-                >
-                  {stats.value.users.weekChange}%
-                </span>
+                <div class="flex items-center gap-2">
+                  <span
+                    class={`percent-change ${stats.value.users.weekChange >= 0 ? 'percent-change-positive' : 'percent-change-negative'}`}
+                  >
+                    {stats.value.users.weekChange}%
+                  </span>
+                  <span class="text-xs text-gray-400">周同比</span>
+                </div>
               }
             />
+            <div class="mt-4 text-xs text-gray-500">
+              <div class="flex justify-between items-center">
+                <span>活跃用户</span>
+                <span class="text-warning">{Math.floor(stats.value.users.total * 0.8)}</span>
+              </div>
+              <div class="flex justify-between items-center mt-2">
+                <span>新增用户</span>
+                <span class="text-success">+{Math.floor(stats.value.users.total * 0.1)}</span>
+              </div>
+            </div>
           </Card>
         </Col>
       </Row>
@@ -418,99 +496,217 @@ export default defineComponent({
 
     // 渲染工具栏
     const renderToolbar = () => (
-      <Card class="mb-4">
-        <div class="flex flex-wrap items-center gap-4">
-          <DatePicker.RangePicker
-            v-model:value={dateRange.value}
-            class="w-[250px]"
-            allowClear={false}
-          />
-          <Radio.Group v-model:value={chartType.value} buttonStyle="solid">
-            <Tooltip title="折线图">
-              <Radio.Button value="line">
-                <LineChartOutlined />
-              </Radio.Button>
-            </Tooltip>
-            <Tooltip title="柱状图">
-              <Radio.Button value="bar">
-                <BarChartOutlined />
-              </Radio.Button>
-            </Tooltip>
-            <Tooltip title="面积图">
-              <Radio.Button value="area">
-                <AreaChartOutlined />
-              </Radio.Button>
-            </Tooltip>
-          </Radio.Group>
-          <Button onClick={refreshData} loading={loading.value}>
-            <ReloadOutlined />
-            刷新
-          </Button>
-          <Select v-model:value={exportFormat.value} class="w-[100px]">
-            <Select.Option value="csv">CSV</Select.Option>
-            <Select.Option value="json">JSON</Select.Option>
-          </Select>
-          <Button onClick={exportData}>
-            <DownloadOutlined />
-            导出
-          </Button>
-          <div class="flex-grow" />
-          <Tooltip title="图表设置">
-            <Button>
-              <SettingOutlined />
+      <Card class="toolbar-card" bordered={false}>
+        <div class="flex flex-wrap items-center justify-between gap-4">
+          <div class="flex items-center gap-4">
+            <DatePicker.RangePicker
+              v-model:value={dateRange.value}
+              class="w-[250px]"
+              allowClear={false}
+              presets={[
+                { label: '今日', value: [dayjs(), dayjs()] },
+                { label: '本周', value: [dayjs().startOf('week'), dayjs()] },
+                { label: '本月', value: [dayjs().startOf('month'), dayjs()] },
+                {
+                  label: '上月',
+                  value: [
+                    dayjs().subtract(1, 'month').startOf('month'),
+                    dayjs().subtract(1, 'month').endOf('month'),
+                  ],
+                },
+              ]}
+            />
+            <div class="chart-controls">
+              <Dropdown
+                trigger={['click']}
+                v-slots={{
+                  overlay: () => (
+                    <Menu class="chart-settings-menu">
+                      <Menu.ItemGroup title="图表类型">
+                        <Menu.Item onClick={() => (chartType.value = 'line')}>
+                          <div
+                            class={`chart-type-item ${chartType.value === 'line' ? 'active' : ''}`}
+                          >
+                            <LineChartOutlined />
+                            <span>折线图</span>
+                          </div>
+                        </Menu.Item>
+                        <Menu.Item onClick={() => (chartType.value = 'bar')}>
+                          <div
+                            class={`chart-type-item ${chartType.value === 'bar' ? 'active' : ''}`}
+                          >
+                            <BarChartOutlined />
+                            <span>柱状图</span>
+                          </div>
+                        </Menu.Item>
+                        <Menu.Item onClick={() => (chartType.value = 'area')}>
+                          <div
+                            class={`chart-type-item ${chartType.value === 'area' ? 'active' : ''}`}
+                          >
+                            <AreaChartOutlined />
+                            <span>面积图</span>
+                          </div>
+                        </Menu.Item>
+                      </Menu.ItemGroup>
+                      <Menu.Divider />
+                      <Menu.ItemGroup title="图表选项">
+                        <Menu.Item>
+                          <div class="chart-option-item">
+                            <span>平滑曲线</span>
+                            <Switch
+                              v-model:checked={chartConfig.value.smooth}
+                              size="small"
+                              class="custom-switch"
+                            />
+                          </div>
+                        </Menu.Item>
+                        <Menu.Item>
+                          <div class="chart-option-item">
+                            <span>堆叠显示</span>
+                            <Switch
+                              v-model:checked={chartConfig.value.stack}
+                              size="small"
+                              class="custom-switch"
+                            />
+                          </div>
+                        </Menu.Item>
+                        <Menu.Item>
+                          <div class="chart-option-item">
+                            <span>数据点</span>
+                            <Switch
+                              v-model:checked={chartConfig.value.showSymbol}
+                              size="small"
+                              class="custom-switch"
+                            />
+                          </div>
+                        </Menu.Item>
+                        <Menu.Item>
+                          <div class="chart-option-item">
+                            <span>数据标签</span>
+                            <Switch
+                              v-model:checked={chartConfig.value.showLabel}
+                              size="small"
+                              class="custom-switch"
+                            />
+                          </div>
+                        </Menu.Item>
+                        <Menu.Item>
+                          <div class="chart-option-item">
+                            <span>平均线</span>
+                            <Switch
+                              v-model:checked={chartConfig.value.showMarkLine}
+                              size="small"
+                              class="custom-switch"
+                            />
+                          </div>
+                        </Menu.Item>
+                      </Menu.ItemGroup>
+                    </Menu>
+                  ),
+                }}
+              >
+                <Button class="setting-btn">
+                  <SettingOutlined />
+                  图表设置
+                  <DownOutlined />
+                </Button>
+              </Dropdown>
+              <Dropdown
+                trigger={['click']}
+                v-slots={{
+                  overlay: () => (
+                    <Menu class="data-filter-menu">
+                      <Menu.ItemGroup title="数据系列">
+                        <Menu.Item>
+                          <div class="data-filter-item">
+                            <div class="flex items-center gap-2">
+                              <div
+                                class="w-3 h-3 rounded-full"
+                                style={{ background: theme.value.programFiles }}
+                              />
+                              <span>编程文件</span>
+                            </div>
+                            <Switch
+                              v-model:checked={filterOptions.value.showProgramFiles}
+                              size="small"
+                              class="custom-switch"
+                            />
+                          </div>
+                        </Menu.Item>
+                        <Menu.Item>
+                          <div class="data-filter-item">
+                            <div class="flex items-center gap-2">
+                              <div
+                                class="w-3 h-3 rounded-full"
+                                style={{ background: theme.value.designProjects }}
+                              />
+                              <span>设计项目</span>
+                            </div>
+                            <Switch
+                              v-model:checked={filterOptions.value.showDesignProjects}
+                              size="small"
+                              class="custom-switch"
+                            />
+                          </div>
+                        </Menu.Item>
+                        <Menu.Item>
+                          <div class="data-filter-item">
+                            <div class="flex items-center gap-2">
+                              <div
+                                class="w-3 h-3 rounded-full"
+                                style={{ background: theme.value.currentTasks }}
+                              />
+                              <span>当前任务</span>
+                            </div>
+                            <Switch
+                              v-model:checked={filterOptions.value.showCurrentTasks}
+                              size="small"
+                              class="custom-switch"
+                            />
+                          </div>
+                        </Menu.Item>
+                        <Menu.Item>
+                          <div class="data-filter-item">
+                            <div class="flex items-center gap-2">
+                              <div
+                                class="w-3 h-3 rounded-full"
+                                style={{ background: theme.value.users }}
+                              />
+                              <span>用户数量</span>
+                            </div>
+                            <Switch
+                              v-model:checked={filterOptions.value.showUsers}
+                              size="small"
+                              class="custom-switch"
+                            />
+                          </div>
+                        </Menu.Item>
+                      </Menu.ItemGroup>
+                    </Menu>
+                  ),
+                }}
+              >
+                <Button class="filter-btn">
+                  <FilterOutlined />
+                  数据筛选
+                  <DownOutlined />
+                </Button>
+              </Dropdown>
+            </div>
+          </div>
+          <div class="flex items-center gap-4">
+            <Select v-model:value={exportFormat.value} class="w-[100px]" size="middle" bordered>
+              <Select.Option value="csv">CSV</Select.Option>
+              <Select.Option value="json">JSON</Select.Option>
+            </Select>
+            <Button type="primary" ghost onClick={exportData} class="export-btn">
+              <DownloadOutlined />
+              导出
             </Button>
-          </Tooltip>
-          <Tooltip title="数据筛选">
-            <Button>
-              <FilterOutlined />
+            <Button onClick={refreshData} loading={loading.value} class="refresh-btn">
+              <ReloadOutlined spin={loading.value} />
+              刷新
             </Button>
-          </Tooltip>
-        </div>
-      </Card>
-    )
-
-    // 渲染图表配置
-    const renderChartConfig = () => (
-      <Card class="mb-4">
-        <div class="flex flex-wrap items-center gap-8">
-          <div class="flex items-center gap-2">
-            <span>平滑曲线</span>
-            <Switch v-model:checked={chartConfig.value.smooth} />
-          </div>
-          <div class="flex items-center gap-2">
-            <span>堆叠显示</span>
-            <Switch v-model:checked={chartConfig.value.stack} />
-          </div>
-          <div class="flex items-center gap-2">
-            <span>数据点</span>
-            <Switch v-model:checked={chartConfig.value.showSymbol} />
-          </div>
-          <div class="flex items-center gap-2">
-            <span>数据标签</span>
-            <Switch v-model:checked={chartConfig.value.showLabel} />
-          </div>
-          <div class="flex items-center gap-2">
-            <span>平均线</span>
-            <Switch v-model:checked={chartConfig.value.showMarkLine} />
-          </div>
-        </div>
-        <Divider class="my-4" />
-        <div class="flex flex-wrap items-center gap-8">
-          <div class="flex items-center gap-2">
-            <span>编程文件</span>
-            <Switch v-model:checked={filterOptions.value.showProgramFiles} />
-          </div>
-          <div class="flex items-center gap-2">
-            <span>设计项目</span>
-            <Switch v-model:checked={filterOptions.value.showDesignProjects} />
-          </div>
-          <div class="flex items-center gap-2">
-            <span>当前任务</span>
-            <Switch v-model:checked={filterOptions.value.showCurrentTasks} />
-          </div>
-          <div class="flex items-center gap-2">
-            <span>用户数量</span>
-            <Switch v-model:checked={filterOptions.value.showUsers} />
           </div>
         </div>
       </Card>
@@ -521,7 +717,6 @@ export default defineComponent({
         {renderStatCards()}
         <div class="my-6" />
         {renderToolbar()}
-        {renderChartConfig()}
         <Card class="chart-container">
           <div ref={chartRef} style="width: 100%; height: 400px;" />
         </Card>

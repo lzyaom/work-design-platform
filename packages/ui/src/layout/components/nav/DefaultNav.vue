@@ -30,9 +30,6 @@ const handleLogout = () => {
 
 <template>
   <div class="flex items-center justify-between px-6 h-full">
-    <!-- Logo -->
-    <div class="text-xl font-bold">平台</div>
-
     <!-- 右侧功能区 -->
     <div class="flex items-center gap-6">
       <!-- 语言切换 -->

@@ -1,0 +1,382 @@
+/* Logo 样式 */
+.logo {
+  @apply h-16 flex items-center justify-center border-b border-gray-200/50 overflow-hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.logo img {
+  @apply transition-all duration-300 hover:scale-110;
+}
+
+/* 通知徽标样式 */
+.ant-badge {
+  @apply transition-all duration-300;
+}
+
+.ant-badge:hover {
+  @apply transform scale-110;
+}
+
+/* 用户头像样式 */
+.ant-avatar {
+  @apply transition-all duration-300;
+}
+
+.ant-avatar:hover {
+  @apply transform scale-110;
+}
+
+/* 按钮悬停效果 */
+.glass-button:hover {
+  @apply transform -translate-y-0.5;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* 下拉菜单样式 */
+.glass-dropdown {
+  @apply rounded-lg;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* 通知列表样式 */
+.ant-list-item {
+  @apply transition-all duration-200;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.ant-list-item:hover {
+  background: rgba(255, 255, 255, 0.6);
+}
+
+/* 导航栏样式 */
+.glass-navbar {
+  @apply h-16 px-6 bg-white/80 backdrop-blur-md border-b border-gray-200/50;
+}
+
+/* 侧边栏样式 */
+.glass-sidebar {
+  @apply bg-white/40 backdrop-blur-md border-r border-gray-200/50 overflow-y-auto;
+  width: 220px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-sidebar.collapsed {
+  width: 80px;
+  min-width: 80px;
+}
+
+/* 主内容区域样式 */
+.main-content {
+  @apply flex-1 transition-all duration-300 ease-in-out;
+}
+
+/* 内容区域样式 */
+.glass-container {
+  @apply backdrop-blur-md;
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+  @apply w-1.5;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-300/80 rounded-full hover:bg-gray-400/80;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .glass-sidebar {
+    @apply fixed left-0 top-0 h-screen z-50;
+    transform: translateX(-100%);
+  }
+
+  .glass-sidebar.collapsed {
+    transform: translateX(0);
+  }
+
+  .main-content {
+    margin-left: 0 !important;
+  }
+}
+
+/* 按钮悬停效果 */
+.glass-button {
+  @apply transition-all duration-200 hover:bg-gray-100/50;
+}
+
+/* 下拉菜单样式 */
+.glass-dropdown {
+  @apply rounded-lg bg-white/90 backdrop-blur-md border border-gray-200/50 shadow-lg;
+}
+
+/* 通知列表样式 */
+.ant-list-item {
+  @apply border-b border-gray-100/50 hover:bg-gray-50/50 transition-colors duration-200;
+}
+
+/* 侧边栏菜单样式 */
+.ant-menu {
+  @apply bg-transparent border-r-0 py-2 px-3;
+}
+
+.ant-menu-item {
+  @apply my-2 rounded-lg transition-all duration-300 !bg-transparent pl-4;
+  height: 48px !important;
+  line-height: 48px !important;
+}
+
+.ant-menu-item:hover:not(.ant-menu-item-selected) {
+  background: linear-gradient(
+    135deg,
+    rgba(116, 116, 252, 0.1),
+    rgba(144, 97, 249, 0.1),
+    rgba(170, 79, 245, 0.1)
+  );
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.ant-menu-item-selected {
+  background: linear-gradient(
+    135deg,
+    rgba(116, 116, 252, 0.4),
+    rgba(144, 97, 249, 0.4),
+    rgba(170, 79, 245, 0.4)
+  );
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06),
+    inset 0 0 20px rgba(255, 255, 255, 0.2);
+  @apply text-white;
+}
+
+.ant-menu-item-selected::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 8px;
+  background: linear-gradient(
+    135deg,
+    rgba(116, 116, 252, 0.2),
+    rgba(144, 97, 249, 0.2),
+    rgba(170, 79, 245, 0.2)
+  );
+  z-index: -1;
+}
+
+/* 子菜单样式 */
+.ant-menu-submenu {
+  @apply !bg-transparent;
+}
+
+.ant-menu-submenu-title {
+  @apply my-2 mx-3 rounded-lg transition-all duration-300 pl-4;
+  height: 48px !important;
+  line-height: 48px !important;
+}
+
+.ant-menu-submenu-title:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(116, 116, 252, 0.1),
+    rgba(144, 97, 249, 0.1),
+    rgba(170, 79, 245, 0.1)
+  );
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.ant-menu-submenu-selected > .ant-menu-submenu-title {
+  background: linear-gradient(
+    135deg,
+    rgba(116, 116, 252, 0.4),
+    rgba(144, 97, 249, 0.4),
+    rgba(170, 79, 245, 0.4)
+  );
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06),
+    inset 0 0 20px rgba(255, 255, 255, 0.2);
+  @apply !text-white;
+}
+
+.ant-menu-submenu-selected > .ant-menu-submenu-title::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 8px;
+  background: linear-gradient(
+    135deg,
+    rgba(116, 116, 252, 0.2),
+    rgba(144, 97, 249, 0.2),
+    rgba(170, 79, 245, 0.2)
+  );
+  z-index: -1;
+}
+
+/* 菜单项激活状态动画 */
+.ant-menu-item-selected,
+.ant-menu-submenu-selected > .ant-menu-submenu-title {
+  animation: menuItemGlow 2s ease-in-out infinite alternate;
+  /* @apply !text-white; */
+}
+
+@keyframes menuItemGlow {
+  from {
+    box-shadow:
+      0 4px 6px -1px rgba(0, 0, 0, 0.1),
+      0 2px 4px -1px rgba(0, 0, 0, 0.06),
+      inset 0 0 20px rgba(255, 255, 255, 0.1);
+  }
+  to {
+    box-shadow:
+      0 4px 6px -1px rgba(0, 0, 0, 0.1),
+      0 2px 4px -1px rgba(0, 0, 0, 0.06),
+      inset 0 0 30px rgba(255, 255, 255, 0.2);
+  }
+}
+
+/* 子菜单内容样式 */
+.ant-menu-sub.ant-menu-inline {
+  @apply bg-transparent pl-6;
+}
+
+/* 菜单项图标和文字的间距 */
+.ant-menu-item .anticon,
+.ant-menu-submenu-title .anticon {
+  @apply mr-3 transition-all duration-300;
+}
+
+/* 菜单项文字颜色 */
+.ant-menu-item-selected,
+.ant-menu-submenu-selected > .ant-menu-submenu-title {
+  @apply text-white;
+}
+
+/* 菜单项文字样式 */
+.ant-menu-title-content {
+  @apply transition-all duration-300;
+}
+
+.ant-menu-item:hover .ant-menu-title-content,
+.ant-menu-submenu-title:hover .ant-menu-title-content,
+.ant-menu-item-selected .ant-menu-title-content {
+  @apply transform translate-x-1;
+}
+
+/* 子菜单展开样式 */
+.ant-menu-submenu-popup {
+  @apply !bg-transparent;
+}
+
+.ant-menu-submenu-popup > .ant-menu {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.3));
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  @apply rounded-lg border border-white/30;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* 菜单项指示器 */
+.ant-menu-inline .ant-menu-item::after {
+  @apply hidden;
+}
+
+.ant-menu-inline-collapsed .ant-menu-item,
+.ant-menu-inline-collapsed .ant-menu-submenu-title {
+  @apply px-0 justify-center;
+  width: 100%;
+  padding-inline: 0 !important;
+}
+
+.ant-menu-inline-collapsed .ant-menu-item .anticon,
+.ant-menu-inline-collapsed .ant-menu-submenu-title .anticon {
+  @apply mr-0 text-lg transform scale-110;
+  line-height: 48px !important;
+}
+
+.ant-menu-inline-collapsed .menu-title {
+  @apply opacity-0 w-0 overflow-hidden absolute;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 菜单展开动画 */
+.ant-menu:not(.ant-menu-inline-collapsed) .ant-menu-item,
+.ant-menu:not(.ant-menu-inline-collapsed) .ant-menu-submenu-title {
+  @apply w-full transition-all duration-300 ease-in-out;
+}
+
+.ant-menu:not(.ant-menu-inline-collapsed) .menu-title {
+  @apply opacity-100 w-auto relative ml-3;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 子菜单箭头动画 */
+.ant-menu-submenu-arrow {
+  @apply transition-transform duration-300 ease-in-out;
+}
+
+.ant-menu-submenu-open > .ant-menu-submenu-title .ant-menu-submenu-arrow {
+  @apply transform rotate-90;
+}
+
+/* 折叠时隐藏 tooltip */
+.ant-menu-inline-collapsed-tooltip {
+  @apply hidden;
+}
+
+/* 菜单项图标动画 */
+.ant-menu-item .anticon,
+.ant-menu-submenu-title .anticon {
+  @apply transition-all duration-300 ease-in-out transform;
+}
+
+.ant-menu-inline-collapsed .ant-menu-item:hover .anticon,
+.ant-menu-inline-collapsed .ant-menu-submenu-title:hover .anticon {
+  @apply scale-125;
+}
+
+/* 子菜单内容过渡 */
+.ant-menu-sub {
+  @apply transition-all duration-300 ease-in-out;
+  overflow: hidden;
+}
+
+.ant-menu-inline > .ant-menu-submenu > .ant-menu-submenu-title {
+  @apply transition-all duration-300 ease-in-out;
+}
+
+/* Logo 区域动画 */
+.logo {
+  @apply h-16 flex items-center justify-center border-b border-gray-200/50 overflow-hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}

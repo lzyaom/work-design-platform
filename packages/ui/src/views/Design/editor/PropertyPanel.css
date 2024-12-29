@@ -1,110 +1,239 @@
-/* 属性面板容器 */
 .property-panel {
-  @apply h-full flex flex-col bg-white/60 backdrop-blur-md;
+  @apply h-full overflow-hidden;
 }
 
-/* 属性标签页 */
-.property-tabs {
-  @apply flex-1 overflow-hidden;
+.property-card {
+  @apply h-full bg-white/10;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
-.property-tabs .ant-tabs-content {
-  @apply h-full overflow-auto;
+.property-card :deep(.ant-card-body) {
+  @apply h-full p-0;
 }
 
-.property-tabs .ant-tabs-tabpane {
-  @apply p-4;
+.property-card :deep(.ant-tabs) {
+  @apply h-full;
 }
 
-.property-tabs .ant-tabs-nav {
-  @apply mb-0 px-4;
+.property-card :deep(.ant-tabs-content) {
+  @apply h-[calc(100%-46px)] overflow-auto p-4;
 }
 
-/* 属性表单 */
-.property-form {
-  @apply space-y-4;
-}
-
-.property-form .ant-form-item {
+/* 表单样式 */
+.property-card :deep(.ant-form-item) {
   @apply mb-4;
 }
 
-.property-form .ant-form-item-label {
-  @apply pb-1;
-}
-
-.property-form .ant-form-item-label > label {
-  @apply text-sm text-gray-600;
-}
-
-/* 事件配置区域 */
-.event-config {
-  @apply mt-6 pt-4 border-t border-gray-100;
-}
-
-/* 颜色选择器 */
-.ant-color-picker-trigger {
-  @apply w-full border border-gray-300 rounded-md;
+.property-card :deep(.ant-form-item-label > label) {
+  @apply text-white/80 text-sm;
 }
 
 /* 输入框样式 */
-.property-form .ant-input,
-.property-form .ant-input-number,
-.property-form .ant-select {
-  @apply border border-gray-300 rounded-md;
+.property-card :deep(.ant-input),
+.property-card :deep(.ant-input-number),
+.property-card :deep(.ant-select-selector),
+.property-card :deep(.ant-input-number-input),
+.property-card :deep(.ant-input-textarea-affix-wrapper) {
+  @apply bg-white/5 border-white/10 text-white/80;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
-.property-form .ant-input:hover,
-.property-form .ant-input-number:hover,
-.property-form .ant-select:hover {
-  @apply border-blue-400;
+.property-card :deep(.ant-input:hover),
+.property-card :deep(.ant-input-number:hover),
+.property-card :deep(.ant-select-selector:hover),
+.property-card :deep(.ant-input-number-input:hover),
+.property-card :deep(.ant-input-textarea-affix-wrapper:hover) {
+  @apply border-blue-400/50;
 }
 
-.property-form .ant-input:focus,
-.property-form .ant-input-number:focus,
-.property-form .ant-select:focus {
-  @apply border-blue-400 ring-1 ring-blue-400;
+.property-card :deep(.ant-input:focus),
+.property-card :deep(.ant-input-number:focus),
+.property-card :deep(.ant-select-selector:focus),
+.property-card :deep(.ant-input-number-input:focus),
+.property-card :deep(.ant-input-textarea-affix-wrapper:focus) {
+  @apply border-blue-400 shadow-none;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
 }
 
-/* 开关样式 */
-.property-form .ant-switch {
-  @apply bg-gray-300;
+/* 选择器样式 */
+.property-card :deep(.ant-select-dropdown) {
+  @apply bg-white/90;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
-.property-form .ant-switch-checked {
+.property-card :deep(.ant-select-item) {
+  @apply text-gray-800;
+}
+
+.property-card :deep(.ant-select-item-option-selected) {
+  @apply bg-blue-50;
+}
+
+/* 卡片样式 */
+.property-card :deep(.ant-card) {
+  @apply bg-white/5 border-white/10 mb-4 overflow-hidden;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.property-card :deep(.ant-card-head) {
+  @apply bg-white/5 border-white/10 min-h-[40px];
+}
+
+.property-card :deep(.ant-card-head-title) {
+  @apply text-white/80 text-sm py-2;
+}
+
+/* 标签页样式 */
+.property-card :deep(.ant-tabs-nav) {
+  @apply mb-0 px-4 pt-2;
+}
+
+.property-card :deep(.ant-tabs-tab) {
+  @apply text-white/60;
+}
+
+.property-card :deep(.ant-tabs-tab:hover) {
+  @apply text-white/80;
+}
+
+.property-card :deep(.ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn) {
+  @apply text-blue-400;
+}
+
+.property-card :deep(.ant-tabs-ink-bar) {
   @apply bg-blue-400;
 }
 
+/* 空状态提示 */
+.empty-tip {
+  @apply flex items-center justify-center h-full text-white/40 text-sm;
+}
+
+/* 事件项样式 */
+.event-item {
+  @apply relative p-4 mb-4 rounded-lg bg-white/5 border border-white/10;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.event-item .remove-btn {
+  @apply absolute top-2 right-2 opacity-0 transition-opacity duration-300;
+}
+
+.event-item:hover .remove-btn {
+  @apply opacity-100;
+}
+
+/* API项样式 */
+.api-item {
+  @apply relative p-4 mb-4 rounded-lg bg-white/5 border border-white/10;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.api-item .remove-btn {
+  @apply absolute top-2 right-2 opacity-0 transition-opacity duration-300;
+}
+
+.api-item:hover .remove-btn {
+  @apply opacity-100;
+}
+
+/* 动画项样式 */
+.animation-item {
+  @apply relative p-4 mb-4 rounded-lg bg-white/5 border border-white/10;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.animation-item .remove-btn {
+  @apply absolute top-2 right-2 opacity-0 transition-opacity duration-300;
+}
+
+.animation-item:hover .remove-btn {
+  @apply opacity-100;
+}
+
+/* 按钮样式 */
+.property-card :deep(.ant-btn-link) {
+  @apply text-blue-400 hover:text-blue-500;
+}
+
+.property-card :deep(.ant-btn-text) {
+  @apply text-white/60 hover:text-white hover:bg-white/10;
+}
+
+.property-card :deep(.ant-btn-dangerous) {
+  @apply text-red-400 hover:text-red-500 hover:bg-red-500/10;
+}
+
 /* 滚动条样式 */
-.property-panel ::-webkit-scrollbar {
+.property-card ::-webkit-scrollbar {
   @apply w-1.5;
 }
 
-.property-panel ::-webkit-scrollbar-track {
+.property-card ::-webkit-scrollbar-track {
   @apply bg-transparent;
 }
 
-.property-panel ::-webkit-scrollbar-thumb {
-  @apply bg-gray-300/80 rounded-full hover:bg-gray-400/80;
+.property-card ::-webkit-scrollbar-thumb {
+  @apply bg-white/20 rounded-full transition-colors duration-300;
 }
 
-/* 表单项动画 */
-.property-form .ant-form-item {
-  @apply transition-all duration-300;
+.property-card ::-webkit-scrollbar-thumb:hover {
+  @apply bg-white/30;
 }
 
-/* 标签页切换动画 */
-.property-tabs .ant-tabs-content {
-  @apply transition-all duration-300;
+/* 颜色选择器样式 */
+.property-card :deep(.ant-color-picker-trigger) {
+  @apply bg-white/5 border-white/10;
 }
 
-/* 属性面板响应式调整 */
-@media (max-width: 768px) {
-  .property-panel {
-    @apply fixed right-0 top-0 h-screen w-80 z-50 transform transition-transform duration-300;
+.property-card :deep(.ant-color-picker-trigger:hover) {
+  @apply border-blue-400/50;
+}
+
+.property-card :deep(.ant-color-picker-dropdown) {
+  @apply bg-white/90;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* 输入框后缀样式 */
+.property-card :deep(.ant-input-number-group-addon) {
+  @apply bg-white/5 border-white/10 text-white/60;
+}
+
+/* 动画效果 */
+.property-card :deep(.ant-form-item),
+.event-item,
+.api-item,
+.animation-item {
+  animation: fadeInUp 0.3s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
   }
-
-  .property-panel.collapsed {
-    @apply translate-x-full;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
+}
+
+/* 工具提示样式 */
+.property-card :deep(.ant-tooltip) {
+  @apply max-w-xs;
+}
+
+.property-card :deep(.ant-tooltip-inner) {
+  @apply bg-black/75 text-white text-xs py-1 px-2;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }

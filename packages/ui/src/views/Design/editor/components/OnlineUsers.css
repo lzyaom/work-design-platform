@@ -1,0 +1,136 @@
+.online-users {
+  @apply fixed top-4 right-4 z-50;
+}
+
+/* 连接状态 */
+.connection-status {
+  @apply flex items-center gap-2 px-3 py-1.5 mb-4 rounded-full text-sm;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.status-dot {
+  @apply w-2 h-2 rounded-full;
+}
+
+.connected .status-dot {
+  @apply bg-green-500;
+  animation: pulse 2s infinite;
+}
+
+.connecting .status-dot {
+  @apply bg-yellow-500;
+  animation: pulse 1s infinite;
+}
+
+.disconnected .status-dot {
+  @apply bg-red-500;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4);
+  }
+
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 6px rgba(34, 197, 94, 0);
+  }
+
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+  }
+}
+
+/* 用户列表 */
+.user-list {
+  @apply flex flex-col gap-2 items-end;
+}
+
+.user-avatar {
+  @apply transition-all duration-300 cursor-pointer border-2 border-transparent;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.user-avatar:hover {
+  @apply transform scale-110;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.user-avatar-selecting {
+  @apply border-blue-500;
+  animation: selecting 2s infinite;
+}
+
+@keyframes selecting {
+  0% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+  }
+
+  70% {
+    box-shadow: 0 0 0 6px rgba(59, 130, 246, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+  }
+}
+
+/* 用户光标 */
+.user-cursor {
+  @apply fixed pointer-events-none z-50;
+  transition: transform 0.1s ease-out;
+}
+
+.cursor-pointer {
+  @apply absolute w-4 h-4;
+  clip-path: polygon(100% 100%, 0 0, 0 100%);
+  background: rgb(59, 130, 246);
+  transform: translate(-2px, -2px) rotate(45deg);
+}
+
+.cursor-avatar {
+  @apply absolute -top-6 -left-6 transition-all duration-300 border-2 border-transparent;
+  transform: scale(0.8);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.cursor-avatar-selecting {
+  @apply border-blue-500;
+  animation: selecting 2s infinite;
+}
+
+/* 工具提示样式 */
+.online-users :deep(.ant-tooltip) {
+  @apply max-w-xs;
+}
+
+.online-users :deep(.ant-tooltip-inner) {
+  @apply bg-black/75 text-white text-xs py-1 px-2;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* 响应式样式 */
+@media (max-width: 640px) {
+  .online-users {
+    @apply top-2 right-2;
+  }
+
+  .connection-status {
+    @apply px-2 py-1 text-xs;
+  }
+
+  .user-avatar {
+    @apply w-8 h-8;
+  }
+
+  .cursor-avatar {
+    @apply -top-4 -left-4;
+    transform: scale(0.6);
+  }
+}

@@ -12,14 +12,12 @@ import ComponentPalette from './ComponentPalette.tsx'
 import DragDropCanvas from './DragDropCanvas.tsx'
 import PropertyPanel from './PropertyPanel.tsx'
 import { useDesignStore } from '@/stores/design.ts'
-import type { Component } from '@/types/component'
 import './index.css'
 
 export default defineComponent({
   name: 'DesignEditor',
   setup() {
     const designStore = useDesignStore()
-    const selectedComponent = ref<Component | null>(null)
     const collaborators = ref([
       {
         id: '1',
@@ -38,16 +36,6 @@ export default defineComponent({
     // 历史记录
     const canUndo = ref(false)
     const canRedo = ref(false)
-
-    // 处理组件选择
-    const handleComponentSelect = (component: Component | null) => {
-      selectedComponent.value = component
-    }
-
-    // 处理组件更新
-    const handleComponentUpdate = (component: Component) => {
-      designStore.updateComponent(component)
-    }
 
     // 历史记录操作
     const handleUndo = () => {
@@ -158,17 +146,10 @@ export default defineComponent({
             <ComponentPalette />
           </aside>
           <div class="canvas-content flex-1">
-            <DragDropCanvas
-              components={designStore.components}
-              onSelect={handleComponentSelect}
-              onUpdate={handleComponentUpdate}
-            />
+            <DragDropCanvas />
           </div>
           <aside class="property-sider glass-sider w-[300px]">
-            <PropertyPanel
-              component={selectedComponent.value as Component}
-              onUpdate={handleComponentUpdate}
-            />
+            <PropertyPanel />
           </aside>
         </div>
       </div>

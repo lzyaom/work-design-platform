@@ -1,26 +1,41 @@
 /* 编辑器布局 */
 .design-editor {
-  @apply h-screen flex flex-col;
+  height: 100vh;
+  background: transparent;
 }
 
 /* 顶部导航栏 */
 .editor-header {
-  @apply h-16 !p-0 bg-white/80 backdrop-blur-md border-b border-gray-200/50;
+  height: 48px;
+  line-height: 48px;
+  padding: 0 16px;
+  background: transparent;
+}
+
+.editor-header :deep(.ant-btn) {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.editor-header :deep(.ant-btn:hover) {
+  color: #1890ff;
+  background: rgba(24, 144, 255, 0.1);
 }
 
 /* 主要内容区域 */
 .editor-main {
-  @apply flex-1 overflow-hidden;
+  height: calc(100vh - 48px);
+  background: transparent;
 }
 
 /* 侧边栏样式 */
-.glass-sider {
-  @apply bg-white/60 backdrop-blur-md border-r border-gray-200/50 overflow-y-auto;
+.editor-sider {
+  background: transparent;
 }
 
 /* 画布区域 */
-.canvas-content {
-  @apply bg-gray-100/50 backdrop-blur-md p-4 overflow-auto;
+.editor-canvas {
+  padding: 16px;
+  background: transparent;
 }
 
 /* 玻璃态按钮 */
@@ -101,4 +116,44 @@
 /* 组件选中状态 */
 .component-selected {
   @apply outline-none ring-2 ring-blue-400 ring-offset-2;
+}
+
+/* 玻璃态头部 */
+.glass-header {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* 玻璃态侧边栏 */
+.glass-sider {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* 玻璃态内容区域 */
+.glass-content {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+}
+
+:deep(.ant-layout-sider-trigger) {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+:deep(.ant-tooltip) {
+  max-width: none;
+}
+
+:deep(.ant-tooltip-inner) {
+  min-height: 24px;
+  padding: 4px 8px;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 12px;
+  background: rgba(0, 0, 0, 0.75);
+  border-radius: 2px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }

@@ -49,6 +49,7 @@ export default [
         component: () => import('../views/Dashboard/Overview.tsx'),
         meta: {
           title: '概览',
+          requiresAuth: true,
         },
       },
       {
@@ -57,6 +58,7 @@ export default [
         component: () => import('../views/Dashboard/Analysis.vue'),
         meta: {
           title: '分析',
+          requiresAuth: true,
         },
       },
     ],
@@ -75,6 +77,7 @@ export default [
         component: () => import(/* webpackChunkName: "design" */ '../views/Design/index.tsx'),
         meta: {
           title: '设计',
+          requiresAuth: true,
           hideInMenu: false,
         },
       },
@@ -84,6 +87,7 @@ export default [
         component: () => import('../views/Design/editor/index.tsx'),
         meta: {
           title: '设计空间',
+          requiresAuth: true,
           hideInMenu: true,
         },
       },
@@ -120,28 +124,28 @@ export default [
   {
     path: '/tasks',
     name: 'Tasks',
-    component: () => import(/* webpackChunkName: "profile" */ '../views/Tasks/index.tsx'),
+    component: () => import('@/views/Tasks/index'),
     meta: {
       requiresAuth: true,
-      title: '任务列表',
+      title: '任务管理',
     },
   },
   {
     path: '/monitor',
     name: 'Monitor',
-    component: () => import(/* webpackChunkName: "profile" */ '../views/Monitor/index.tsx'),
+    component: () => import('@/views/Monitor/index'),
     meta: {
       requiresAuth: true,
-      title: '监控',
+      title: '监控管理',
     },
   },
   {
     path: '/logs',
     name: 'Logs',
-    component: () => import(/* webpackChunkName: "profile" */ '../views/Log/index.tsx'),
+    component: () => import('@/views/Log/index'),
     meta: {
       requiresAuth: true,
-      title: '日志',
+      title: '日志管理',
     },
   },
   { path: '/:pathMatch(.*)*', name: 'NotFound', redirect: '/login' },

@@ -1,158 +1,276 @@
-import { defineComponent, ref, type PropType, type StyleValue } from 'vue'
+import { defineComponent, ref, onMounted, onUnmounted } from 'vue'
 import {
   CopyOutlined,
+  DeleteOutlined,
   ScissorOutlined,
   SnippetsOutlined,
-  DeleteOutlined,
+  ArrowUpOutlined,
+  ArrowDownOutlined,
+  GroupOutlined,
+  UngroupOutlined,
 } from '@ant-design/icons-vue'
-import { Button, Tooltip } from 'ant-design-vue'
+import { Menu, message } from 'ant-design-vue'
+import type { MenuProps } from 'ant-design-vue'
+import { useDesignStore } from '@/stores/design'
 import type { Component } from '@/types/component'
 import './DragDropCanvas.css'
-
+import { ComponentRenderer } from './core/componentRenderer'
 export default defineComponent({
   name: 'DragDropCanvas',
-  props: {
-    components: {
-      type: Array as PropType<Component[]>,
-      required: true,
-    },
-    onSelect: {
-      type: Function as PropType<(component: Component | null) => void>,
-      required: true,
-    },
-    onUpdate: {
-      type: Function as PropType<(component: Component) => void>,
-      required: true,
-    },
-  },
-  setup(props) {
+  setup() {
+    const designStore = useDesignStore()
     const canvasRef = ref<HTMLDivElement>()
-    const selectedComponent = ref<Component | null>(null)
+    const contextMenuPosition = ref({ x: 0, y: 0 })
+    const showContextMenu = ref(false)
     const clipboard = ref<Component | null>(null)
 
-    // 处理拖拽
-    const handleDragOver = (e: DragEvent) => {
-      e.preventDefault()
-      e.dataTransfer!.dropEffect = 'copy'
-    }
-
+    // 处理组件拖放
     const handleDrop = (e: DragEvent) => {
       e.preventDefault()
-      const data = e.dataTransfer!.getData('component')
-      console.log('data', data)
-      if (data) {
-        const component = JSON.parse(data) as Component
-        const rect = canvasRef.value!.getBoundingClientRect()
-        component.styles = {
-          ...component.styles,
-          position: 'absolute',
-          left: `${e.clientX - rect.left}px`,
-          top: `${e.clientY - rect.top}px`,
+      const data = e.dataTransfer?.getData('component')
+      if (data && canvasRef.value) {
+        const component = JSON.parse(data)
+        const rect = canvasRef.value.getBoundingClientRect()
+        const x = e.clientX - rect.left
+        const y = e.clientY - rect.top
+
+        // 创建新组件
+        const newComponent: Component = {
+          ...component,
+          id: `${component.type}_${Date.now()}`,
+          props: {},
+          style: {
+            position: 'absolute',
+            left: `${x}px`,
+            top: `${y}px`,
+            ...component.style,
+          },
         }
-        // TODO: 添加组件到画布
-        props.onUpdate(component)
+
+        designStore.addComponent(newComponent)
+        message.success('添加组件成功')
       }
     }
 
-    // 处理组件选择
+    // 处理拖拽悬停
+    const handleDragOver = (e: DragEvent) => {
+      e.preventDefault()
+      if (e.dataTransfer) {
+        e.dataTransfer.dropEffect = 'copy'
+      }
+    }
+
+    // 处理右键菜单
+    const handleContextMenu = (e: MouseEvent) => {
+      e.preventDefault()
+      contextMenuPosition.value = {
+        x: e.offsetX,
+        y: e.offsetY,
+      }
+      showContextMenu.value = true
+    }
+
+    const handleContextMenuOutside = (e: MouseEvent) => {
+      if (e.target !== canvasRef.value) {
+        showContextMenu.value = false
+      }
+    }
+
+    // 右键菜单项
+    const contextMenuItems = [
+      {
+        key: 'copy',
+        icon: <CopyOutlined />,
+        label: '复制',
+      },
+      {
+        key: 'cut',
+        icon: <ScissorOutlined />,
+        label: '剪切',
+      },
+      {
+        key: 'paste',
+        icon: <SnippetsOutlined />,
+        label: '粘贴',
+        disabled: !clipboard.value,
+      },
+      {
+        type: 'divider',
+      },
+      {
+        key: 'delete',
+        icon: <DeleteOutlined />,
+        label: '删除',
+        danger: true,
+      },
+      {
+        type: 'divider',
+      },
+      {
+        key: 'moveUp',
+        icon: <ArrowUpOutlined />,
+        label: '上移一层',
+      },
+      {
+        key: 'moveDown',
+        icon: <ArrowDownOutlined />,
+        label: '下移一层',
+      },
+      {
+        type: 'divider',
+      },
+      {
+        key: 'group',
+        icon: <GroupOutlined />,
+        label: '组合',
+      },
+      {
+        key: 'ungroup',
+        icon: <UngroupOutlined />,
+        label: '取消组合',
+      },
+    ]
+
+    // 处理菜单点击
+    const handleMenuClick: MenuProps['onClick'] = ({ key }) => {
+      const selectedComponent = designStore.selectedComponent
+      if (!selectedComponent) return
+
+      switch (key) {
+        case 'copy':
+          clipboard.value = { ...selectedComponent }
+          message.success('已复制到剪贴板')
+          break
+        case 'cut':
+          clipboard.value = { ...selectedComponent }
+          designStore.deleteComponent(selectedComponent.id)
+          message.success('已剪切到剪贴板')
+          break
+        case 'paste':
+          if (clipboard.value && clipboard.value.style) {
+            const newComponent = {
+              ...clipboard.value,
+              id: `${clipboard.value.type}_${Date.now()}`,
+              style: {
+                ...clipboard.value.style,
+                left: `${parseInt((clipboard.value.style.left as string) || '0') + 20}px`,
+                top: `${parseInt((clipboard.value.style.top as string) || '0') + 20}px`,
+              },
+            }
+            designStore.addComponent(newComponent)
+            message.success('已粘贴组件')
+          }
+          break
+        case 'delete':
+          designStore.deleteComponent(selectedComponent.id)
+          message.success('已删除组件')
+          break
+        case 'moveUp':
+          designStore.moveComponent(selectedComponent.id, 'up')
+          message.success('已上移一层')
+          break
+        case 'moveDown':
+          designStore.moveComponent(selectedComponent.id, 'down')
+          message.success('已下移一层')
+          break
+        case 'group':
+          // TODO: 实现组合功能
+          message.info('组合功能开发中')
+          break
+        case 'ungroup':
+          // TODO: 实现取消组合功能
+          message.info('取消组合功能开发中')
+          break
+      }
+
+      showContextMenu.value = false
+    }
+
+    // 处理点击画布
+    const handleCanvasClick = (e: MouseEvent) => {
+      if (e.target === canvasRef.value) {
+        designStore.clearSelection()
+      }
+      showContextMenu.value = false
+    }
+
+    // 处理点击组件
     const handleComponentClick = (e: MouseEvent, component: Component) => {
       e.stopPropagation()
-      selectedComponent.value = component
-      props.onSelect(component)
+      designStore.selectComponent(component.id)
     }
 
-    // 处理画布点击
-    const handleCanvasClick = () => {
-      selectedComponent.value = null
-      props.onSelect(null)
-    }
-
-    // 工具栏操作
-    const handleCopy = () => {
-      if (selectedComponent.value) {
-        clipboard.value = JSON.parse(JSON.stringify(selectedComponent.value))
+    // 处理组件拖动
+    const handleComponentDragStart = (e: DragEvent, component: Component) => {
+      if (e.dataTransfer) {
+        e.dataTransfer.setData('componentId', component.id)
+        designStore.selectComponent(component.id)
       }
     }
 
-    const handleCut = () => {
-      if (selectedComponent.value) {
-        clipboard.value = JSON.parse(JSON.stringify(selectedComponent.value))
-        // TODO: 从画布移除组件
-        selectedComponent.value = null
-        props.onSelect(null)
-      }
-    }
+    // 清理事件监听
+    onMounted(() => {
+      document.addEventListener('click', handleContextMenuOutside)
+    })
 
-    const handlePaste = () => {
-      if (clipboard.value) {
-        const component = JSON.parse(JSON.stringify(clipboard.value))
-        component.id = Date.now().toString() // 生成新的ID
-        component.style = {
-          ...component.style,
-          left: `${parseInt(component.style.left) + 20}px`,
-          top: `${parseInt(component.style.top) + 20}px`,
-        }
-        // TODO: 添加组件到画布
-        props.onUpdate(component)
-      }
-    }
-
-    const handleDelete = () => {
-      if (selectedComponent.value) {
-        // TODO: 从画布移除组件
-        selectedComponent.value = null
-        props.onSelect(null)
-      }
-    }
-
-    // 渲染工具栏
-    const renderToolbar = () => {
-      if (!selectedComponent.value) return null
-
-      return (
-        <div class="component-toolbar">
-          <Tooltip title="复制">
-            <Button type="text" onClick={handleCopy}>
-              <CopyOutlined />
-            </Button>
-          </Tooltip>
-          <Tooltip title="剪切">
-            <Button type="text" onClick={handleCut}>
-              <ScissorOutlined />
-            </Button>
-          </Tooltip>
-          <Tooltip title="粘贴">
-            <Button type="text" onClick={handlePaste} disabled={!clipboard.value}>
-              <SnippetsOutlined />
-            </Button>
-          </Tooltip>
-          <Tooltip title="删除">
-            <Button type="text" onClick={handleDelete} class="text-red-500">
-              <DeleteOutlined />
-            </Button>
-          </Tooltip>
-        </div>
-      )
-    }
+    onUnmounted(() => {
+      document.removeEventListener('click', handleContextMenuOutside)
+    })
 
     return () => (
       <div
         ref={canvasRef}
         class="drag-drop-canvas"
-        onDragover={handleDragOver}
         onDrop={handleDrop}
+        onDragover={handleDragOver}
         onClick={handleCanvasClick}
+        onContextmenu={handleContextMenu}
       >
-        {props.components.map((component) => (
+        {designStore.components.map((component) => (
           <div
-            class="canvas-component"
-            style={component.styles as StyleValue}
-            onClick={(e: MouseEvent) => handleComponentClick(e, component)}
+            key={component.id}
+            class={['component-wrapper', { selected: component.id === designStore.selectedId }]}
+            onClick={(e) => handleComponentClick(e, component)}
+            onContextmenu={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              designStore.selectComponent(component.id)
+              handleContextMenu(e)
+            }}
+            draggable
+            onDragstart={(e) => handleComponentDragStart(e, component)}
           >
-            {component.component}
+            {/* 渲染组件 */}
+            <ComponentRenderer component={component} />
           </div>
         ))}
-        {renderToolbar()}
+
+        {/* 右键菜单 */}
+        {showContextMenu.value && (
+          <Menu
+            onClick={handleMenuClick}
+            class="context-menu"
+            style={{
+              left: `${contextMenuPosition.value.x}px`,
+              top: `${contextMenuPosition.value.y}px`,
+            }}
+          >
+            {contextMenuItems.map((item) =>
+              item.type === 'divider' ? (
+                <Menu.Divider key={Math.random()} />
+              ) : (
+                <Menu.Item
+                  key={item.key}
+                  icon={item.icon}
+                  danger={item.danger}
+                  disabled={item.disabled}
+                >
+                  {item.label}
+                </Menu.Item>
+              ),
+            )}
+          </Menu>
+        )}
       </div>
     )
   },

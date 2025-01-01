@@ -1,481 +1,571 @@
-import type { JSONSchema7 } from 'json-schema'
-import Ajv from 'ajv'
 import type { Component } from '@/types/component'
 
-// 基础样式 Schema
-const baseStyleSchema: JSONSchema7 = {
-  type: 'object',
+export type ComponentType =
+  | 'button'
+  | 'input'
+  | 'select'
+  | 'card'
+  | 'table'
+  | 'form'
+  | 'datePicker'
+  | 'timePicker'
+  | 'switch'
+  | 'radio'
+  | 'checkbox'
+  | 'slider'
+  | 'rate'
+  | 'upload'
+  | 'progress'
+  | 'avatar'
+  | 'badge'
+  | 'tag'
+  | 'divider'
+  | 'space'
+
+interface ComponentSchema {
+  type: ComponentType
+  title: string
+  description?: string
   properties: {
-    position: { type: 'string', enum: ['absolute', 'relative', 'fixed'] },
-    width: { type: 'string', pattern: '^\\d+px|\\d+%|auto$' },
-    height: { type: 'string', pattern: '^\\d+px|\\d+%|auto$' },
-    top: { type: 'string', pattern: '^\\d+px|\\d+%|auto$' },
-    left: { type: 'string', pattern: '^\\d+px|\\d+%|auto$' },
-    margin: { type: 'string' },
-    padding: { type: 'string' },
-    backgroundColor: { type: 'string' },
-    backgroundImage: { type: 'string' },
-    backgroundSize: { type: 'string' },
-    backgroundPosition: { type: 'string' },
-    borderWidth: { type: 'string', pattern: '^\\d+px$' },
-    borderStyle: { type: 'string', enum: ['solid', 'dashed', 'dotted', 'none'] },
-    borderColor: { type: 'string' },
-    borderRadius: { type: 'string', pattern: '^\\d+px|\\d+%$' },
-    fontSize: { type: 'string', pattern: '^\\d+px|\\d+em|\\d+rem$' },
-    fontWeight: { type: 'string', enum: ['normal', 'bold', 'lighter'] },
-    color: { type: 'string' },
-    textAlign: { type: 'string', enum: ['left', 'center', 'right', 'justify'] },
-    lineHeight: { type: 'string' },
-    opacity: { type: 'number', minimum: 0, maximum: 1 },
-    transform: { type: 'string' },
-    transition: { type: 'string' },
-    zIndex: { type: 'number' },
-    display: { type: 'string', enum: ['block', 'flex', 'grid', 'none'] },
-    flexDirection: { type: 'string', enum: ['row', 'column', 'row-reverse', 'column-reverse'] },
-    justifyContent: {
-      type: 'string',
-      enum: ['flex-start', 'flex-end', 'center', 'space-between', 'space-around'],
-    },
-    alignItems: {
-      type: 'string',
-      enum: ['flex-start', 'flex-end', 'center', 'stretch', 'baseline'],
-    },
-  },
-  additionalProperties: false,
+    props?: {
+      type: 'object'
+      properties: Record<string, unknown>
+    }
+    style?: {
+      type: 'object'
+      properties: Record<string, unknown>
+    }
+    events?: {
+      type: 'array'
+      items: {
+        type: 'object'
+        properties: Record<string, unknown>
+      }
+    }
+    customData?: {
+      type: 'object'
+      properties: Record<string, unknown>
+    }
+  }
 }
 
-// 基础事件 Schema
-const baseEventSchema: JSONSchema7 = {
-  type: 'object',
-  properties: {
-    type: { type: 'string', enum: ['click', 'change', 'focus', 'blur', 'input', 'submit'] },
-    handler: { type: 'string' },
-  },
-  required: ['type', 'handler'],
-}
-
-// 基础动画 Schema
-const baseAnimationSchema: JSONSchema7 = {
-  type: 'object',
-  properties: {
-    type: { type: 'string', enum: ['fade', 'slide', 'zoom', 'rotate'] },
-    duration: { type: 'number', minimum: 0 },
-    delay: { type: 'number', minimum: 0 },
-    easing: {
-      type: 'string',
-      enum: ['linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out'],
+// 基础组件 schema
+const baseComponentSchema: Partial<ComponentSchema['properties']> = {
+  style: {
+    type: 'object',
+    properties: {
+      width: { type: 'string' },
+      height: { type: 'string' },
+      margin: { type: 'string' },
+      padding: { type: 'string' },
+      backgroundColor: { type: 'string' },
+      borderWidth: { type: 'string' },
+      borderStyle: { type: 'string', enum: ['none', 'solid', 'dashed', 'dotted'] },
+      borderColor: { type: 'string' },
+      borderRadius: { type: 'string' },
+      fontSize: { type: 'string' },
+      fontWeight: { type: 'string', enum: ['normal', 'bold', 'lighter'] },
+      color: { type: 'string' },
+      textAlign: { type: 'string', enum: ['left', 'center', 'right', 'justify'] },
+      lineHeight: { type: 'string' },
+      opacity: { type: 'number', minimum: 0, maximum: 1 },
+      zIndex: { type: 'number' },
     },
   },
-  required: ['type', 'duration'],
-}
-
-// API 配置 Schema
-const apiConfigSchema: JSONSchema7 = {
-  type: 'object',
-  properties: {
-    method: { type: 'string', enum: ['GET', 'POST', 'PUT', 'DELETE'] },
-    url: { type: 'string', format: 'uri' },
-    params: { type: 'object' },
-    headers: { type: 'object' },
-    body: { type: 'object' },
-  },
-  required: ['method', 'url'],
-}
-
-// 数据绑定 Schema
-const dataBindingSchema: JSONSchema7 = {
-  type: 'object',
-  properties: {
-    source: { type: 'string' },
-    path: { type: 'string' },
-    defaultValue: { type: 'string' },
-    transform: { type: 'string' },
-  },
-  required: ['source', 'path'],
-}
-
-// 组件基础 Schema
-const baseComponentSchema: JSONSchema7 = {
-  type: 'object',
-  properties: {
-    id: { type: 'string' },
-    type: { type: 'string' },
-    title: { type: 'string' },
-    icon: { type: 'string' },
-    style: baseStyleSchema,
-    events: {
-      type: 'array',
-      items: baseEventSchema,
-    },
-    animations: {
-      type: 'array',
-      items: baseAnimationSchema,
-    },
-    dataBindings: {
-      type: 'array',
-      items: dataBindingSchema,
-    },
-    apis: {
-      type: 'array',
-      items: apiConfigSchema,
-    },
-  },
-  required: ['id', 'type'],
-}
-
-// 按钮组件 Schema
-const buttonSchema: JSONSchema7 = {
-  type: 'object',
-  allOf: [
-    { $ref: '#/definitions/baseComponent' },
-    {
+  events: {
+    type: 'array',
+    items: {
+      type: 'object',
       properties: {
-        props: {
-          type: 'object',
-          properties: {
-            text: { type: 'string' },
-            type: { type: 'string', enum: ['primary', 'default', 'dashed', 'link', 'text'] },
-            size: { type: 'string', enum: ['large', 'middle', 'small'] },
-            disabled: { type: 'boolean' },
-            loading: { type: 'boolean' },
-            icon: { type: 'string' },
-          },
-        },
+        type: { type: 'string' },
+        handler: { type: 'string' },
+        description: { type: 'string' },
       },
     },
-  ],
+  },
+  customData: {
+    type: 'object',
+    properties: {},
+  },
 }
 
-// 输入框组件 Schema
-const inputSchema: JSONSchema7 = {
-  type: 'object',
-  allOf: [
-    { $ref: '#/definitions/baseComponent' },
-    {
-      properties: {
-        props: {
-          type: 'object',
-          properties: {
-            placeholder: { type: 'string' },
-            type: {
-              type: 'string',
-              enum: ['text', 'password', 'number', 'email', 'tel', 'url'],
-            },
-            maxLength: { type: 'number' },
-            disabled: { type: 'boolean' },
-            readonly: { type: 'boolean' },
-            allowClear: { type: 'boolean' },
-            prefix: { type: 'string' },
-            suffix: { type: 'string' },
-          },
+// 组件 schema 定义
+export const componentSchemas: Record<ComponentType, ComponentSchema> = {
+  button: {
+    type: 'button',
+    title: '按钮',
+    properties: {
+      props: {
+        type: 'object',
+        properties: {
+          type: { type: 'string', enum: ['primary', 'default', 'dashed', 'text', 'link'] },
+          size: { type: 'string', enum: ['large', 'middle', 'small'] },
+          disabled: { type: 'boolean' },
+          loading: { type: 'boolean' },
+          danger: { type: 'boolean' },
+          ghost: { type: 'boolean' },
+          block: { type: 'boolean' },
+          icon: { type: 'string' },
+          shape: { type: 'string', enum: ['default', 'circle', 'round'] },
         },
       },
+      ...baseComponentSchema,
     },
-  ],
-}
-
-// 选择器组件 Schema
-const selectSchema: JSONSchema7 = {
-  type: 'object',
-  allOf: [
-    { $ref: '#/definitions/baseComponent' },
-    {
-      properties: {
-        props: {
-          type: 'object',
-          properties: {
-            options: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  label: { type: 'string' },
-                  value: { type: ['string', 'number'] },
-                  disabled: { type: 'boolean' },
-                },
-                required: ['label', 'value'],
-              },
-            },
-            placeholder: { type: 'string' },
-            mode: { type: 'string', enum: ['default', 'multiple', 'tags'] },
-            disabled: { type: 'boolean' },
-            allowClear: { type: 'boolean' },
-            showSearch: { type: 'boolean' },
-          },
-          required: ['options'],
+  },
+  input: {
+    type: 'input',
+    title: '输入框',
+    properties: {
+      props: {
+        type: 'object',
+        properties: {
+          placeholder: { type: 'string' },
+          type: { type: 'string', enum: ['text', 'password', 'number', 'textarea'] },
+          size: { type: 'string', enum: ['large', 'middle', 'small'] },
+          disabled: { type: 'boolean' },
+          maxLength: { type: 'number' },
+          showCount: { type: 'boolean' },
+          allowClear: { type: 'boolean' },
+          bordered: { type: 'boolean' },
+          addonBefore: { type: 'string' },
+          addonAfter: { type: 'string' },
+          prefix: { type: 'string' },
+          suffix: { type: 'string' },
         },
       },
+      ...baseComponentSchema,
     },
-  ],
-}
-
-// 表格组件 Schema
-const tableSchema: JSONSchema7 = {
-  type: 'object',
-  allOf: [
-    { $ref: '#/definitions/baseComponent' },
-    {
-      properties: {
-        props: {
-          type: 'object',
-          properties: {
-            columns: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  title: { type: 'string' },
-                  dataIndex: { type: 'string' },
-                  key: { type: 'string' },
-                  width: { type: ['string', 'number'] },
-                  fixed: { type: 'string', enum: ['left', 'right'] },
-                  sorter: { type: 'boolean' },
-                  filters: { type: 'array' },
-                },
-                required: ['title', 'dataIndex'],
-              },
-            },
-            dataSource: { type: 'array' },
-            loading: { type: 'boolean' },
-            pagination: {
-              type: ['boolean', 'object'],
-              properties: {
-                current: { type: 'number' },
-                pageSize: { type: 'number' },
-                total: { type: 'number' },
-              },
-            },
-            scroll: {
+  },
+  select: {
+    type: 'select',
+    title: '下拉选择',
+    properties: {
+      props: {
+        type: 'object',
+        properties: {
+          options: {
+            type: 'array',
+            items: {
               type: 'object',
               properties: {
-                x: { type: ['string', 'number'] },
-                y: { type: ['string', 'number'] },
+                label: { type: 'string' },
+                value: { type: 'string' },
+                disabled: { type: 'boolean' },
               },
             },
           },
-          required: ['columns'],
+          mode: { type: 'string', enum: ['default', 'multiple', 'tags'] },
+          placeholder: { type: 'string' },
+          size: { type: 'string', enum: ['large', 'middle', 'small'] },
+          disabled: { type: 'boolean' },
+          loading: { type: 'boolean' },
+          showSearch: { type: 'boolean' },
+          allowClear: { type: 'boolean' },
         },
       },
-    },
-  ],
-}
-
-// 表单组件 Schema
-const formSchema: JSONSchema7 = {
-  type: 'object',
-  allOf: [
-    { $ref: '#/definitions/baseComponent' },
-    {
-      properties: {
-        props: {
-          type: 'object',
-          properties: {
-            layout: { type: 'string', enum: ['horizontal', 'vertical', 'inline'] },
-            labelCol: {
-              type: 'object',
-              properties: {
-                span: { type: 'number' },
-                offset: { type: 'number' },
-              },
-            },
-            wrapperCol: {
-              type: 'object',
-              properties: {
-                span: { type: 'number' },
-                offset: { type: 'number' },
-              },
-            },
-            name: { type: 'string' },
-            initialValues: { type: 'object' },
-            scrollToFirstError: { type: 'boolean' },
-          },
-        },
-      },
-    },
-  ],
-}
-
-// 图表组件 Schema
-const chartSchema: JSONSchema7 = {
-  type: 'object',
-  allOf: [
-    { $ref: '#/definitions/baseComponent' },
-    {
-      properties: {
-        props: {
-          type: 'object',
-          properties: {
-            type: {
-              type: 'string',
-              enum: ['line', 'bar', 'pie', 'scatter', 'radar', 'heatmap'],
-            },
-            data: { type: 'array' },
-            xField: { type: 'string' },
-            yField: { type: 'string' },
-            seriesField: { type: 'string' },
-            color: {
-              type: ['string', 'array'],
-              items: { type: 'string' },
-            },
-            animation: {
-              type: 'object',
-              properties: {
-                appear: { type: 'object' },
-                enter: { type: 'object' },
-                leave: { type: 'object' },
-              },
-            },
-          },
-          required: ['type', 'data'],
-        },
-      },
-    },
-  ],
-}
-
-// 更多动画类型
-const extendedAnimationSchema: JSONSchema7 = {
-  type: 'object',
-  properties: {
-    type: {
-      type: 'string',
-      enum: [
-        'fade',
-        'slide',
-        'zoom',
-        'rotate',
-        'bounce',
-        'flip',
-        'shake',
-        'swing',
-        'rubberBand',
-        'jello',
-        'tada',
-        'wobble',
-        'slideInUp',
-        'slideInDown',
-        'slideInLeft',
-        'slideInRight',
-        'zoomIn',
-        'zoomInUp',
-        'zoomInDown',
-        'zoomInLeft',
-        'zoomInRight',
-        'rotateIn',
-        'rotateInUpLeft',
-        'rotateInUpRight',
-        'rotateInDownLeft',
-        'rotateInDownRight',
-      ],
-    },
-    duration: { type: 'number', minimum: 0 },
-    delay: { type: 'number', minimum: 0 },
-    easing: {
-      type: 'string',
-      enum: [
-        'linear',
-        'ease',
-        'ease-in',
-        'ease-out',
-        'ease-in-out',
-        'cubic-bezier(0.68, -0.55, 0.265, 1.55)', // bouncing
-        'cubic-bezier(0.215, 0.61, 0.355, 1)', // easeOutCubic
-        'cubic-bezier(0.645, 0.045, 0.355, 1)', // easeInOutCubic
-        'cubic-bezier(0.95, 0.05, 0.795, 0.035)', // easeInExpo
-        'cubic-bezier(0.19, 1, 0.22, 1)', // easeOutExpo
-      ],
-    },
-    iterationCount: { type: ['number', 'string'], enum: ['infinite'] },
-    direction: {
-      type: 'string',
-      enum: ['normal', 'reverse', 'alternate', 'alternate-reverse'],
-    },
-    fillMode: {
-      type: 'string',
-      enum: ['none', 'forwards', 'backwards', 'both'],
+      ...baseComponentSchema,
     },
   },
-  required: ['type', 'duration'],
+  card: {
+    type: 'card',
+    title: '卡片',
+    properties: {
+      props: {
+        type: 'object',
+        properties: {
+          title: { type: 'string' },
+          extra: { type: 'string' },
+          bordered: { type: 'boolean' },
+          hoverable: { type: 'boolean' },
+          loading: { type: 'boolean' },
+          size: { type: 'string', enum: ['default', 'small'] },
+        },
+      },
+      ...baseComponentSchema,
+    },
+  },
+  table: {
+    type: 'table',
+    title: '表格',
+    properties: {
+      props: {
+        type: 'object',
+        properties: {
+          columns: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                title: { type: 'string' },
+                dataIndex: { type: 'string' },
+                key: { type: 'string' },
+                width: { type: 'number' },
+                fixed: { type: 'string', enum: ['left', 'right'] },
+                align: { type: 'string', enum: ['left', 'center', 'right'] },
+                sorter: { type: 'boolean' },
+                filters: { type: 'array' },
+              },
+            },
+          },
+          dataSource: { type: 'array' },
+          bordered: { type: 'boolean' },
+          loading: { type: 'boolean' },
+          size: { type: 'string', enum: ['default', 'middle', 'small'] },
+          scroll: {
+            type: 'object',
+            properties: {
+              x: { type: 'number' },
+              y: { type: 'number' },
+            },
+          },
+        },
+      },
+      ...baseComponentSchema,
+    },
+  },
+  form: {
+    type: 'form',
+    title: '表单',
+    properties: {
+      props: {
+        type: 'object',
+        properties: {
+          layout: { type: 'string', enum: ['horizontal', 'vertical', 'inline'] },
+          labelCol: {
+            type: 'object',
+            properties: {
+              span: { type: 'number' },
+              offset: { type: 'number' },
+            },
+          },
+          wrapperCol: {
+            type: 'object',
+            properties: {
+              span: { type: 'number' },
+              offset: { type: 'number' },
+            },
+          },
+          colon: { type: 'boolean' },
+          labelAlign: { type: 'string', enum: ['left', 'right'] },
+          validateOnRuleChange: { type: 'boolean' },
+          scrollToFirstError: { type: 'boolean' },
+          size: { type: 'string', enum: ['default', 'small', 'large'] },
+        },
+      },
+      ...baseComponentSchema,
+    },
+  },
+  datePicker: {
+    type: 'datePicker',
+    title: '日期选择',
+    properties: {
+      props: {
+        type: 'object',
+        properties: {
+          allowClear: { type: 'boolean' },
+          autoFocus: { type: 'boolean' },
+          disabled: { type: 'boolean' },
+          format: { type: 'string' },
+          placeholder: { type: 'string' },
+          size: { type: 'string', enum: ['large', 'middle', 'small'] },
+          bordered: { type: 'boolean' },
+          showTime: { type: 'boolean' },
+          showToday: { type: 'boolean' },
+        },
+      },
+      ...baseComponentSchema,
+    },
+  },
+  timePicker: {
+    type: 'timePicker',
+    title: '时间选择',
+    properties: {
+      props: {
+        type: 'object',
+        properties: {
+          allowClear: { type: 'boolean' },
+          autoFocus: { type: 'boolean' },
+          disabled: { type: 'boolean' },
+          format: { type: 'string' },
+          placeholder: { type: 'string' },
+          size: { type: 'string', enum: ['large', 'middle', 'small'] },
+          bordered: { type: 'boolean' },
+          use12Hours: { type: 'boolean' },
+          hourStep: { type: 'number' },
+          minuteStep: { type: 'number' },
+          secondStep: { type: 'number' },
+        },
+      },
+      ...baseComponentSchema,
+    },
+  },
+  switch: {
+    type: 'switch',
+    title: '开关',
+    properties: {
+      props: {
+        type: 'object',
+        properties: {
+          checked: { type: 'boolean' },
+          disabled: { type: 'boolean' },
+          loading: { type: 'boolean' },
+          size: { type: 'string', enum: ['default', 'small'] },
+          checkedChildren: { type: 'string' },
+          unCheckedChildren: { type: 'string' },
+        },
+      },
+      ...baseComponentSchema,
+    },
+  },
+  radio: {
+    type: 'radio',
+    title: '单选框',
+    properties: {
+      props: {
+        type: 'object',
+        properties: {
+          options: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                label: { type: 'string' },
+                value: { type: 'string' },
+                disabled: { type: 'boolean' },
+              },
+            },
+          },
+          disabled: { type: 'boolean' },
+          buttonStyle: { type: 'string', enum: ['outline', 'solid'] },
+          size: { type: 'string', enum: ['large', 'middle', 'small'] },
+        },
+      },
+      ...baseComponentSchema,
+    },
+  },
+  checkbox: {
+    type: 'checkbox',
+    title: '复选框',
+    properties: {
+      props: {
+        type: 'object',
+        properties: {
+          options: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                label: { type: 'string' },
+                value: { type: 'string' },
+                disabled: { type: 'boolean' },
+              },
+            },
+          },
+          disabled: { type: 'boolean' },
+          indeterminate: { type: 'boolean' },
+        },
+      },
+      ...baseComponentSchema,
+    },
+  },
+  slider: {
+    type: 'slider',
+    title: '滑动输入条',
+    properties: {
+      props: {
+        type: 'object',
+        properties: {
+          min: { type: 'number' },
+          max: { type: 'number' },
+          step: { type: 'number' },
+          disabled: { type: 'boolean' },
+          range: { type: 'boolean' },
+          vertical: { type: 'boolean' },
+          reverse: { type: 'boolean' },
+          marks: { type: 'object' },
+        },
+      },
+      ...baseComponentSchema,
+    },
+  },
+  rate: {
+    type: 'rate',
+    title: '评分',
+    properties: {
+      props: {
+        type: 'object',
+        properties: {
+          allowClear: { type: 'boolean' },
+          allowHalf: { type: 'boolean' },
+          count: { type: 'number' },
+          disabled: { type: 'boolean' },
+          tooltips: { type: 'array', items: { type: 'string' } },
+        },
+      },
+      ...baseComponentSchema,
+    },
+  },
+  upload: {
+    type: 'upload',
+    title: '上传',
+    properties: {
+      props: {
+        type: 'object',
+        properties: {
+          accept: { type: 'string' },
+          action: { type: 'string' },
+          directory: { type: 'boolean' },
+          disabled: { type: 'boolean' },
+          listType: { type: 'string', enum: ['text', 'picture', 'picture-card'] },
+          multiple: { type: 'boolean' },
+          name: { type: 'string' },
+          showUploadList: { type: 'boolean' },
+        },
+      },
+      ...baseComponentSchema,
+    },
+  },
+  progress: {
+    type: 'progress',
+    title: '进度条',
+    properties: {
+      props: {
+        type: 'object',
+        properties: {
+          type: { type: 'string', enum: ['line', 'circle', 'dashboard'] },
+          percent: { type: 'number' },
+          showInfo: { type: 'boolean' },
+          status: { type: 'string', enum: ['success', 'exception', 'normal', 'active'] },
+          strokeLinecap: { type: 'string', enum: ['round', 'square'] },
+          strokeColor: { type: 'string' },
+          trailColor: { type: 'string' },
+          size: { type: 'string', enum: ['default', 'small'] },
+        },
+      },
+      ...baseComponentSchema,
+    },
+  },
+  avatar: {
+    type: 'avatar',
+    title: '头像',
+    properties: {
+      props: {
+        type: 'object',
+        properties: {
+          icon: { type: 'string' },
+          shape: { type: 'string', enum: ['circle', 'square'] },
+          size: { type: 'string', enum: ['large', 'small', 'default'] },
+          src: { type: 'string' },
+          srcSet: { type: 'string' },
+          alt: { type: 'string' },
+        },
+      },
+      ...baseComponentSchema,
+    },
+  },
+  badge: {
+    type: 'badge',
+    title: '徽标数',
+    properties: {
+      props: {
+        type: 'object',
+        properties: {
+          color: { type: 'string' },
+          count: { type: 'number' },
+          dot: { type: 'boolean' },
+          offset: {
+            type: 'array',
+            items: { type: 'number' },
+            minItems: 2,
+            maxItems: 2,
+          },
+          overflowCount: { type: 'number' },
+          showZero: { type: 'boolean' },
+          status: {
+            type: 'string',
+            enum: ['success', 'processing', 'default', 'error', 'warning'],
+          },
+          text: { type: 'string' },
+          title: { type: 'string' },
+        },
+      },
+      ...baseComponentSchema,
+    },
+  },
+  tag: {
+    type: 'tag',
+    title: '标签',
+    properties: {
+      props: {
+        type: 'object',
+        properties: {
+          closable: { type: 'boolean' },
+          color: { type: 'string' },
+          icon: { type: 'string' },
+          visible: { type: 'boolean' },
+        },
+      },
+      ...baseComponentSchema,
+    },
+  },
+  divider: {
+    type: 'divider',
+    title: '分割线',
+    properties: {
+      props: {
+        type: 'object',
+        properties: {
+          dashed: { type: 'boolean' },
+          orientation: { type: 'string', enum: ['left', 'right', 'center'] },
+          plain: { type: 'boolean' },
+          type: { type: 'string', enum: ['horizontal', 'vertical'] },
+        },
+      },
+      ...baseComponentSchema,
+    },
+  },
+  space: {
+    type: 'space',
+    title: '间距',
+    properties: {
+      props: {
+        type: 'object',
+        properties: {
+          align: { type: 'string', enum: ['start', 'end', 'center', 'baseline'] },
+          direction: { type: 'string', enum: ['vertical', 'horizontal'] },
+          size: { type: 'string', enum: ['small', 'middle', 'large'] },
+          wrap: { type: 'boolean' },
+        },
+      },
+      ...baseComponentSchema,
+    },
+  },
 }
 
-// 导出所有 Schema
-export const componentSchemas = {
-  definitions: {
-    baseComponent: baseComponentSchema,
-    baseStyle: baseStyleSchema,
-    baseEvent: baseEventSchema,
-    baseAnimation: extendedAnimationSchema, // 使用扩展的动画 Schema
-    apiConfig: apiConfigSchema,
-    dataBinding: dataBindingSchema,
-  },
-  components: {
-    button: buttonSchema,
-    input: inputSchema,
-    select: selectSchema,
-    table: tableSchema,
-    form: formSchema,
-    chart: chartSchema,
-  } as const,
-} as const
-
-// 组件类型
-export type ComponentType = keyof typeof componentSchemas.components
-
-// Schema 验证函数
+// 验证组件配置
 export function validateComponent(component: Component, type: ComponentType): boolean {
-  const schema = componentSchemas.components[type]
-  if (!schema) {
-    console.error(`未找到组件类型 "${type}" 的 Schema`)
+  const schema = componentSchemas[type]
+  if (!schema) return false
+
+  // 验证必需属性
+  if (!component.id || !component.type || !component.title) {
     return false
   }
 
-  // 使用 ajv 进行验证
-  const ajv = new Ajv({ allErrors: true })
-  ajv.addSchema(componentSchemas.definitions.baseComponent, '#/definitions/baseComponent')
-
-  const validate = ajv.compile(schema)
-  const valid = validate(component)
-
-  if (!valid) {
-    console.error('组件验证失败:', validate.errors)
+  // 验证属性类型
+  if (component.props && schema.properties.props) {
+    // TODO: 实现属性验证逻辑
   }
 
-  return valid
-}
-
-// 组件默认值生成函数
-export function generateDefaultProps(type: ComponentType): Record<string, unknown> {
-  const schema = componentSchemas.components[type]
-  if (!schema) {
-    console.error(`未找到组件类型 "${type}" 的 Schema`)
-    return {}
+  // 验证样式
+  if (component.style && schema.properties.style) {
+    // TODO: 实现样式验证逻辑
   }
 
-  // 递归生成默认值
-  function generateDefaults(schema: JSONSchema7): Record<string, unknown> {
-    if (!schema.properties) return {}
-
-    const defaults: Record<string, unknown> = {}
-    for (const [key, prop] of Object.entries(schema.properties)) {
-      if (prop && typeof prop === 'object' && !Array.isArray(prop)) {
-        const schemaProp = prop as JSONSchema7
-        if ('default' in schemaProp) {
-          defaults[key] = schemaProp.default
-        } else if (schemaProp.type === 'object') {
-          defaults[key] = generateDefaults(schemaProp)
-        } else if (schemaProp.type === 'array') {
-          defaults[key] = []
-        } else if (schemaProp.type === 'string') {
-          defaults[key] = ''
-        } else if (schemaProp.type === 'number') {
-          defaults[key] = 0
-        } else if (schemaProp.type === 'boolean') {
-          defaults[key] = false
-        }
-      }
-    }
-    return defaults
+  // 验证事件
+  if (component.events && schema.properties.events) {
+    // TODO: 实现事件验证逻辑
   }
 
-  return generateDefaults(schema)
+  return true
 }

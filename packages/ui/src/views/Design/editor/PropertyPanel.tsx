@@ -1,35 +1,50 @@
 import { defineComponent, ref, computed, watch } from 'vue'
-import { Form, Input, InputNumber, Select, Tabs, Card, Button } from 'ant-design-vue'
+import { Form, Input, InputNumber, Select, Tabs, Card, Switch } from 'ant-design-vue'
+import type { SelectProps, InputNumberProps, CheckboxProps } from 'ant-design-vue'
+import type { CSSProperties } from 'vue'
 import {
   FontSizeOutlined,
   BgColorsOutlined,
   BorderOutlined,
   LayoutOutlined,
-  CodeOutlined,
-  ApiOutlined,
-  ThunderboltOutlined,
-  PlusOutlined,
-  DeleteOutlined,
 } from '@ant-design/icons-vue'
 import { useDesignStore } from '@/stores/design'
 import './PropertyPanel.css'
-import type { ComponentProps, ComponentStyle } from '@/types/component'
+// import type { Component } from '@/types/component'
+import { componentSchemas } from './core/componentSchemas'
+import type { ComponentType } from './core/componentSchemas'
 
 const { TabPane } = Tabs
 const { Item: FormItem } = Form
+
+interface PropSchema {
+  type: string
+  title?: string
+  enum?: string[]
+}
+
+type StyleConfig = Required<{
+  [K in keyof CSSProperties]: NonNullable<CSSProperties[K]>
+}>
 
 export default defineComponent({
   name: 'PropertyPanel',
   setup() {
     const designStore = useDesignStore()
     const activeTab = ref('style')
-    const formRef = ref()
+    // const formRef = ref<FormInstance>()
 
     // 计算当前选中的组件
     const selectedComponent = computed(() => designStore.selectedComponent)
 
+    // 计算当前组件的schema
+    const componentSchema = computed(() => {
+      if (!selectedComponent.value) return null
+      return componentSchemas[selectedComponent.value.type as ComponentType]
+    })
+
     // 样式配置
-    const styleConfig = ref<ComponentStyle>({
+    const styleConfig = ref<StyleConfig>({
       // 字体样式
       fontSize: '14px',
       fontWeight: 'normal',
@@ -40,7 +55,7 @@ export default defineComponent({
 
       // 背景样式
       backgroundColor: 'transparent',
-      backgroundImage: '',
+      backgroundImage: 'none',
       backgroundSize: 'cover',
       backgroundPosition: 'center',
 
@@ -60,42 +75,7 @@ export default defineComponent({
       flexDirection: 'row',
       justifyContent: 'flex-start',
       alignItems: 'stretch',
-    })
-
-    // 逻辑配置
-    const logicConfig = ref({
-      // 数据绑定
-      dataSource: '',
-      dataPath: '',
-      defaultValue: '',
-
-      // 事件处理
-      events: [
-        {
-          type: 'click',
-          handler: '',
-        },
-      ],
-
-      // API 配置
-      apis: [
-        {
-          method: 'GET',
-          url: '',
-          params: {},
-          headers: {},
-        },
-      ],
-
-      // 动画效果
-      animations: [
-        {
-          type: 'fade',
-          duration: 300,
-          delay: 0,
-        },
-      ],
-    })
+    } as StyleConfig)
 
     // 监听选中组件变化
     watch(
@@ -106,24 +86,17 @@ export default defineComponent({
           styleConfig.value = {
             ...styleConfig.value,
             ...newComponent.style,
-          } as ComponentStyle
-
-          // 更新逻辑配置
-          if (newComponent.props) {
-            logicConfig.value = {
-              ...logicConfig.value,
-              ...newComponent.props,
-            }
-          }
+          } as StyleConfig
         }
       },
+      { immediate: true },
     )
 
-    // 处理样式更新
-    const handleStyleChange = (key: keyof ComponentStyle, value: string | number) => {
+    // 处理样式更新 - 使用防抖优化
+    const handleStyleChange = (key: keyof CSSProperties, value: string | number) => {
       if (!selectedComponent.value) return
 
-      const newStyle: ComponentStyle = {
+      const newStyle = {
         ...selectedComponent.value.style,
         [key]: value,
       }
@@ -134,8 +107,8 @@ export default defineComponent({
       })
     }
 
-    // 处理逻辑更新
-    const handleLogicChange = (key: keyof ComponentProps, value: string | number | boolean) => {
+    // 处理属性更新
+    const handlePropChange = (key: string, value: unknown) => {
       if (!selectedComponent.value) return
 
       const newProps = {
@@ -149,46 +122,19 @@ export default defineComponent({
       })
     }
 
-    // 添加事件处理器
-    const addEventHandler = () => {
-      logicConfig.value.events.push({
-        type: 'click',
-        handler: '',
-      })
+    // 处理选择框变更
+    const handleSelectChange = (value: SelectProps['value']) => {
+      return String(value)
     }
 
-    // 删除事件处理器
-    const removeEventHandler = (index: number) => {
-      logicConfig.value.events.splice(index, 1)
+    // 处理数字输入框变更
+    const handleNumberChange = (value: InputNumberProps['value']) => {
+      return typeof value === 'number' ? value : undefined
     }
 
-    // 添加 API 配置
-    const addApiConfig = () => {
-      logicConfig.value.apis.push({
-        method: 'GET',
-        url: '',
-        params: {},
-        headers: {},
-      })
-    }
-
-    // 删除 API 配置
-    const removeApiConfig = (index: number) => {
-      logicConfig.value.apis.splice(index, 1)
-    }
-
-    // 添加动画效果
-    const addAnimation = () => {
-      logicConfig.value.animations.push({
-        type: 'fade',
-        duration: 300,
-        delay: 0,
-      })
-    }
-
-    // 删除动画效果
-    const removeAnimation = (index: number) => {
-      logicConfig.value.animations.splice(index, 1)
+    // 处理开关变更
+    const handleSwitchChange = (checked: CheckboxProps['checked']) => {
+      return Boolean(checked)
     }
 
     return () => (
@@ -198,8 +144,61 @@ export default defineComponent({
             <div class="empty-tip">请选择一个组件进行配置</div>
           ) : (
             <Tabs v-model:activeKey={activeTab.value}>
+              {/* 组件属性配置 */}
+              <TabPane key="props" tab="组件属性">
+                <Form layout="vertical">
+                  {componentSchema.value?.properties.props?.properties &&
+                    Object.entries(componentSchema.value.properties.props.properties).map(
+                      ([key, prop]) => {
+                        const typedProp = prop as PropSchema
+                        return (
+                          <FormItem key={key} label={typedProp.title || key}>
+                            {typedProp.type === 'string' && typedProp.enum ? (
+                              <Select
+                                value={selectedComponent.value?.props?.[key] as string}
+                                onChange={(value) =>
+                                  handlePropChange(key, handleSelectChange(value))
+                                }
+                              >
+                                {typedProp.enum.map((option) => (
+                                  <Select.Option key={option} value={option}>
+                                    {option}
+                                  </Select.Option>
+                                ))}
+                              </Select>
+                            ) : typedProp.type === 'boolean' ? (
+                              <Switch
+                                checked={selectedComponent.value?.props?.[key] as boolean}
+                                onChange={(checked) =>
+                                  handlePropChange(key, handleSwitchChange(checked as boolean))
+                                }
+                              />
+                            ) : typedProp.type === 'number' ? (
+                              <InputNumber
+                                value={selectedComponent.value?.props?.[key] as number}
+                                onChange={(value) => {
+                                  const num = handleNumberChange(value)
+                                  if (num !== undefined) handlePropChange(key, num)
+                                }}
+                              />
+                            ) : (
+                              <Input
+                                value={selectedComponent.value?.props?.[key] as string}
+                                onChange={(e: Event) =>
+                                  handlePropChange(key, (e.target as HTMLInputElement).value)
+                                }
+                              />
+                            )}
+                          </FormItem>
+                        )
+                      },
+                    )}
+                </Form>
+              </TabPane>
+
+              {/* 样式配置 */}
               <TabPane key="style" tab="样式配置">
-                <Form ref={formRef} layout="vertical">
+                <Form layout="vertical">
                   {/* 字体样式配置 */}
                   <Card
                     size="small"
@@ -212,15 +211,20 @@ export default defineComponent({
                   >
                     <FormItem label="字体大小">
                       <InputNumber
-                        v-model:value={styleConfig.value.fontSize}
+                        value={parseInt(String(styleConfig.value.fontSize))}
                         addon-after="px"
-                        onChange={(value) => handleStyleChange('fontSize', value + 'px')}
+                        onChange={(value) => {
+                          const num = handleNumberChange(value)
+                          if (num !== undefined) handleStyleChange('fontSize', `${num}px`)
+                        }}
                       />
                     </FormItem>
                     <FormItem label="字体粗细">
                       <Select
-                        v-model:value={styleConfig.value.fontWeight}
-                        onChange={(value) => handleStyleChange('fontWeight', value as string)}
+                        value={styleConfig.value.fontWeight}
+                        onChange={(value) =>
+                          handleStyleChange('fontWeight', handleSelectChange(value))
+                        }
                       >
                         <Select.Option value="normal">正常</Select.Option>
                         <Select.Option value="bold">粗体</Select.Option>
@@ -229,9 +233,25 @@ export default defineComponent({
                     </FormItem>
                     <FormItem label="字体颜色">
                       <Input
-                        v-model:value={styleConfig.value.color}
-                        onChange={(e) => handleStyleChange('color', e.target.value as string)}
+                        type="color"
+                        value={styleConfig.value.color}
+                        onChange={(e: Event) =>
+                          handleStyleChange('color', (e.target as HTMLInputElement).value)
+                        }
                       />
+                    </FormItem>
+                    <FormItem label="对齐方式">
+                      <Select
+                        value={styleConfig.value.textAlign}
+                        onChange={(value) =>
+                          handleStyleChange('textAlign', handleSelectChange(value))
+                        }
+                      >
+                        <Select.Option value="left">左对齐</Select.Option>
+                        <Select.Option value="center">居中</Select.Option>
+                        <Select.Option value="right">右对齐</Select.Option>
+                        <Select.Option value="justify">两端对齐</Select.Option>
+                      </Select>
                     </FormItem>
                   </Card>
 
@@ -247,19 +267,11 @@ export default defineComponent({
                   >
                     <FormItem label="背景颜色">
                       <Input
-                        v-model:value={styleConfig.value.backgroundColor}
-                        onChange={(e) =>
-                          handleStyleChange('backgroundColor', e.target.value as string)
+                        type="color"
+                        value={styleConfig.value.backgroundColor}
+                        onChange={(e: Event) =>
+                          handleStyleChange('backgroundColor', (e.target as HTMLInputElement).value)
                         }
-                      />
-                    </FormItem>
-                    <FormItem label="背景图片">
-                      <Input
-                        v-model:value={styleConfig.value.backgroundImage}
-                        onChange={(e) =>
-                          handleStyleChange('backgroundImage', e.target.value as string)
-                        }
-                        placeholder="输入图片URL"
                       />
                     </FormItem>
                   </Card>
@@ -276,16 +288,22 @@ export default defineComponent({
                   >
                     <FormItem label="边框宽度">
                       <InputNumber
-                        v-model:value={styleConfig.value.borderWidth}
+                        value={parseInt(String(styleConfig.value.borderWidth))}
                         addon-after="px"
-                        onChange={(value) => handleStyleChange('borderWidth', value + 'px')}
+                        onChange={(value) => {
+                          const num = handleNumberChange(value)
+                          if (num !== undefined) handleStyleChange('borderWidth', `${num}px`)
+                        }}
                       />
                     </FormItem>
                     <FormItem label="边框样式">
                       <Select
-                        v-model:value={styleConfig.value.borderStyle}
-                        onChange={(value) => handleStyleChange('borderStyle', value as string)}
+                        value={styleConfig.value.borderStyle}
+                        onChange={(value) =>
+                          handleStyleChange('borderStyle', handleSelectChange(value))
+                        }
                       >
+                        <Select.Option value="none">无</Select.Option>
                         <Select.Option value="solid">实线</Select.Option>
                         <Select.Option value="dashed">虚线</Select.Option>
                         <Select.Option value="dotted">点线</Select.Option>
@@ -293,15 +311,21 @@ export default defineComponent({
                     </FormItem>
                     <FormItem label="边框颜色">
                       <Input
-                        v-model:value={styleConfig.value.borderColor}
-                        onChange={(e) => handleStyleChange('borderColor', e.target.value as string)}
+                        type="color"
+                        value={styleConfig.value.borderColor}
+                        onChange={(e: Event) =>
+                          handleStyleChange('borderColor', (e.target as HTMLInputElement).value)
+                        }
                       />
                     </FormItem>
                     <FormItem label="圆角">
                       <InputNumber
-                        v-model:value={styleConfig.value.borderRadius}
+                        value={parseInt(String(styleConfig.value.borderRadius))}
                         addon-after="px"
-                        onChange={(value) => handleStyleChange('borderRadius', value + 'px')}
+                        onChange={(value) => {
+                          const num = handleNumberChange(value)
+                          if (num !== undefined) handleStyleChange('borderRadius', `${num}px`)
+                        }}
                       />
                     </FormItem>
                   </Card>
@@ -314,234 +338,54 @@ export default defineComponent({
                         <LayoutOutlined /> 布局样式
                       </span>
                     }
+                    class="mb-4"
                   >
                     <FormItem label="宽度">
                       <InputNumber
-                        v-model:value={styleConfig.value.width}
+                        value={
+                          styleConfig.value.width === 'auto'
+                            ? undefined
+                            : parseInt(String(styleConfig.value.width))
+                        }
                         addon-after="px"
-                        onChange={(value) => handleStyleChange('width', value + 'px')}
+                        onChange={(value) => {
+                          const num = handleNumberChange(value)
+                          handleStyleChange('width', num !== undefined ? `${num}px` : 'auto')
+                        }}
                       />
                     </FormItem>
                     <FormItem label="高度">
                       <InputNumber
-                        v-model:value={styleConfig.value.height}
+                        value={
+                          styleConfig.value.height === 'auto'
+                            ? undefined
+                            : parseInt(String(styleConfig.value.height))
+                        }
                         addon-after="px"
-                        onChange={(value) => handleStyleChange('height', value + 'px')}
+                        onChange={(value) => {
+                          const num = handleNumberChange(value)
+                          handleStyleChange('height', num !== undefined ? `${num}px` : 'auto')
+                        }}
                       />
                     </FormItem>
                     <FormItem label="外边距">
                       <Input
-                        v-model:value={styleConfig.value.margin}
-                        onChange={(e) => handleStyleChange('margin', e.target.value as string)}
-                        placeholder="上 右 下 左"
+                        value={styleConfig.value.margin}
+                        onChange={(e: Event) =>
+                          handleStyleChange('margin', (e.target as HTMLInputElement).value)
+                        }
+                        placeholder="例如: 10px 20px"
                       />
                     </FormItem>
                     <FormItem label="内边距">
                       <Input
-                        v-model:value={styleConfig.value.padding}
-                        onChange={(e) => handleStyleChange('padding', e.target.value as string)}
-                        placeholder="上 右 下 左"
-                      />
-                    </FormItem>
-                  </Card>
-                </Form>
-              </TabPane>
-
-              <TabPane key="logic" tab="逻辑配置">
-                <Form layout="vertical">
-                  {/* 数据配置 */}
-                  <Card
-                    size="small"
-                    title={
-                      <span>
-                        <CodeOutlined /> 数据配置
-                      </span>
-                    }
-                    class="mb-4"
-                  >
-                    <FormItem label="数据源">
-                      <Input
-                        v-model:value={logicConfig.value.dataSource}
-                        onChange={(e) => handleLogicChange('dataSource', e.target.value as string)}
-                        placeholder="数据源名称"
-                      />
-                    </FormItem>
-                    <FormItem label="数据路径">
-                      <Input
-                        v-model:value={logicConfig.value.dataPath}
-                        onChange={(e) => handleLogicChange('dataPath', e.target.value as string)}
-                        placeholder="数据访问路径"
-                      />
-                    </FormItem>
-                    <FormItem label="默认值">
-                      <Input
-                        v-model:value={logicConfig.value.defaultValue}
-                        onChange={(e) =>
-                          handleLogicChange('defaultValue', e.target.value as string)
+                        value={styleConfig.value.padding}
+                        onChange={(e: Event) =>
+                          handleStyleChange('padding', (e.target as HTMLInputElement).value)
                         }
-                        placeholder="默认值"
+                        placeholder="例如: 10px 20px"
                       />
                     </FormItem>
-                  </Card>
-
-                  {/* 事件配置 */}
-                  <Card
-                    size="small"
-                    title={
-                      <span>
-                        <ThunderboltOutlined /> 事件配置
-                      </span>
-                    }
-                    class="mb-4"
-                    extra={
-                      <Button type="link" onClick={addEventHandler}>
-                        <PlusOutlined /> 添加事件
-                      </Button>
-                    }
-                  >
-                    {logicConfig.value.events.map((event, index) => (
-                      <div key={index} class="event-item">
-                        <FormItem label="事件类型">
-                          <Select
-                            v-model:value={event.type}
-                            onChange={(value) =>
-                              handleLogicChange(`events[${index}].type`, value as string)
-                            }
-                          >
-                            <Select.Option value="click">点击</Select.Option>
-                            <Select.Option value="change">变更</Select.Option>
-                            <Select.Option value="focus">聚焦</Select.Option>
-                            <Select.Option value="blur">失焦</Select.Option>
-                          </Select>
-                        </FormItem>
-                        <FormItem label="处理函数">
-                          <Input.TextArea
-                            v-model:value={event.handler}
-                            onChange={(e) =>
-                              handleLogicChange(
-                                `events[${index}].handler`,
-                                e.target.value as string,
-                              )
-                            }
-                            placeholder="输入处理函数代码"
-                            rows={4}
-                          />
-                        </FormItem>
-                        <Button
-                          type="text"
-                          danger
-                          onClick={() => removeEventHandler(index)}
-                          class="remove-btn"
-                        >
-                          <DeleteOutlined /> 删除
-                        </Button>
-                      </div>
-                    ))}
-                  </Card>
-
-                  {/* API 配置 */}
-                  <Card
-                    size="small"
-                    title={
-                      <span>
-                        <ApiOutlined /> API 配置
-                      </span>
-                    }
-                    class="mb-4"
-                    extra={
-                      <Button type="link" onClick={addApiConfig}>
-                        <PlusOutlined /> 添加 API
-                      </Button>
-                    }
-                  >
-                    {logicConfig.value.apis.map((api, index) => (
-                      <div key={index} class="api-item">
-                        <FormItem label="请求方法">
-                          <Select
-                            v-model:value={api.method}
-                            onChange={(value) =>
-                              handleLogicChange(`apis[${index}].method`, value as string)
-                            }
-                          >
-                            <Select.Option value="GET">GET</Select.Option>
-                            <Select.Option value="POST">POST</Select.Option>
-                            <Select.Option value="PUT">PUT</Select.Option>
-                            <Select.Option value="DELETE">DELETE</Select.Option>
-                          </Select>
-                        </FormItem>
-                        <FormItem label="请求地址">
-                          <Input
-                            v-model:value={api.url}
-                            onChange={(e) =>
-                              handleLogicChange(`apis[${index}].url`, e.target.value as string)
-                            }
-                            placeholder="输入 API 地址"
-                          />
-                        </FormItem>
-                        <Button
-                          type="text"
-                          danger
-                          onClick={() => removeApiConfig(index)}
-                          class="remove-btn"
-                        >
-                          <DeleteOutlined /> 删除
-                        </Button>
-                      </div>
-                    ))}
-                  </Card>
-
-                  {/* 动画配置 */}
-                  <Card
-                    size="small"
-                    title="动画配置"
-                    extra={
-                      <Button type="link" onClick={addAnimation}>
-                        <PlusOutlined /> 添加动画
-                      </Button>
-                    }
-                  >
-                    {logicConfig.value.animations.map((animation, index) => (
-                      <div key={index} class="animation-item">
-                        <FormItem label="动画类型">
-                          <Select
-                            v-model:value={animation.type}
-                            onChange={(value) =>
-                              handleLogicChange(`animations[${index}].type`, value as string)
-                            }
-                          >
-                            <Select.Option value="fade">淡入淡出</Select.Option>
-                            <Select.Option value="slide">滑动</Select.Option>
-                            <Select.Option value="zoom">缩放</Select.Option>
-                          </Select>
-                        </FormItem>
-                        <FormItem label="持续时间">
-                          <InputNumber
-                            v-model:value={animation.duration}
-                            addon-after="ms"
-                            onChange={(value) =>
-                              handleLogicChange(`animations[${index}].duration`, value)
-                            }
-                          />
-                        </FormItem>
-                        <FormItem label="延迟时间">
-                          <InputNumber
-                            v-model:value={animation.delay}
-                            addon-after="ms"
-                            onChange={(value) =>
-                              handleLogicChange(`animations[${index}].delay`, value)
-                            }
-                          />
-                        </FormItem>
-                        <Button
-                          type="text"
-                          danger
-                          onClick={() => removeAnimation(index)}
-                          class="remove-btn"
-                        >
-                          <DeleteOutlined /> 删除
-                        </Button>
-                      </div>
-                    ))}
                   </Card>
                 </Form>
               </TabPane>

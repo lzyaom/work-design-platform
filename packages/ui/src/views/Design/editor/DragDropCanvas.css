@@ -1,53 +1,81 @@
 /* 画布容器 */
 .drag-drop-canvas {
-  @apply relative w-full h-full bg-white/50 rounded-lg overflow-auto;
-  background-image: 
-    linear-gradient(rgba(0, 0, 0, 0.1) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.1) 1px, transparent 1px);
-  background-size: 20px 20px;
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 600px;
+  background-color: #f5f5f5;
+  overflow: auto;
+  user-select: none;
+}
+
+.drag-drop-canvas.drag-over {
+  background: #e6f7ff;
 }
 
 /* 组件包装器 */
 .component-wrapper {
-  @apply absolute cursor-move transition-all duration-300;
-  user-select: none;
+  position: absolute;
+  min-width: 50px;
+  min-height: 30px;
+  cursor: move;
+  background: white;
+  border: 1px solid #e8e8e8;
+  border-radius: 4px;
+  transition: all 0.2s;
 }
 
-.component-wrapper::before {
-  content: '';
-  @apply absolute -inset-1 rounded border-2 border-transparent pointer-events-none transition-all duration-300;
-}
-
-.component-wrapper:hover::before {
-  @apply border-blue-300/50;
-}
-
-.component-wrapper.selected::before {
-  @apply border-blue-500;
+.component-wrapper.selected {
+  border: 2px solid #1890ff;
   box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
 }
 
-/* 组件内容 */
-.component-content {
-  @apply relative;
+.component-wrapper.dragging {
+  opacity: 0.7;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* 组件调整手柄 */
-.component-wrapper.selected::after {
+.component-wrapper:hover {
+  outline: 2px dashed #1890ff;
+}
+
+.component-wrapper:hover::before {
+  content: attr(data-type);
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #1890ff;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.component-wrapper:hover::after {
   content: '';
-  @apply absolute -right-2 -bottom-2 w-4 h-4 bg-white rounded-full border-2 border-blue-500 cursor-se-resize;
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 4px;
+  border-style: solid;
+  border-color: #1890ff transparent transparent transparent;
 }
 
 /* 组件工具栏 */
 .component-toolbar {
-  @apply absolute -top-8 left-1/2 transform -translate-x-1/2 flex gap-1 p-1 rounded-md opacity-0 transition-opacity duration-300;
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: absolute;
+  top: -40px;
+  right: 0;
+  background: #fff;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  z-index: 100;
 }
 
 .component-wrapper.selected .component-toolbar {
@@ -56,14 +84,10 @@
 
 /* 右键菜单 */
 .context-menu {
-  position: absolute;
-  min-width: 160px;
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  background: #fff;
   border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   z-index: 1000;
 }
 
@@ -87,51 +111,127 @@
 
 /* 组件对齐线 */
 .alignment-line {
-  @apply absolute bg-blue-500/50 pointer-events-none;
+  position: absolute;
+  background-color: #1890ff;
+  pointer-events: none;
   z-index: 1000;
 }
 
 .alignment-line.horizontal {
-  @apply h-px w-full;
+  width: 100%;
+  height: 1px;
 }
 
 .alignment-line.vertical {
-  @apply w-px h-full;
+  width: 1px;
+  height: 100%;
 }
 
 /* 组件缩放手柄 */
-.resize-handle {
-  @apply absolute w-2 h-2 bg-white border-2 border-blue-500 rounded-full opacity-0 transition-opacity duration-300;
+.resize-handles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
 }
 
-.component-wrapper.selected .resize-handle {
-  @apply opacity-100;
+.resize-handle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: #fff;
+  border: 1px solid #1890ff;
+  pointer-events: all;
+  z-index: 100;
+}
+
+.resize-handle:hover {
+  background: #1890ff;
 }
 
 .resize-handle.top-left {
-  @apply -top-1 -left-1 cursor-nw-resize;
+  top: -4px;
+  left: -4px;
+  cursor: nw-resize;
+}
+
+.resize-handle.top-center {
+  top: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  cursor: n-resize;
 }
 
 .resize-handle.top-right {
-  @apply -top-1 -right-1 cursor-ne-resize;
+  top: -4px;
+  right: -4px;
+  cursor: ne-resize;
+}
+
+.resize-handle.middle-left {
+  top: 50%;
+  left: -4px;
+  transform: translateY(-50%);
+  cursor: w-resize;
+}
+
+.resize-handle.middle-right {
+  top: 50%;
+  right: -4px;
+  transform: translateY(-50%);
+  cursor: e-resize;
 }
 
 .resize-handle.bottom-left {
-  @apply -bottom-1 -left-1 cursor-sw-resize;
+  bottom: -4px;
+  left: -4px;
+  cursor: sw-resize;
+}
+
+.resize-handle.bottom-center {
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  cursor: s-resize;
 }
 
 .resize-handle.bottom-right {
-  @apply -bottom-1 -right-1 cursor-se-resize;
+  bottom: -4px;
+  right: -4px;
+  cursor: se-resize;
 }
 
 /* 组件旋转手柄 */
 .rotate-handle {
-  @apply absolute -top-8 left-1/2 transform -translate-x-1/2 w-4 h-4 
-    bg-white border-2 border-blue-500 rounded-full cursor-pointer opacity-0 transition-opacity duration-300;
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  border: 1px solid #1890ff;
+  border-radius: 50%;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  cursor: pointer;
+  pointer-events: all;
+  z-index: 100;
 }
 
-.component-wrapper.selected .rotate-handle {
-  @apply opacity-100;
+.rotate-handle:hover {
+  background: #1890ff;
+}
+
+.rotate-handle::before {
+  content: '';
+  position: absolute;
+  width: 1px;
+  height: 14px;
+  background: #1890ff;
+  left: 50%;
+  bottom: 100%;
+  transform: translateX(-50%);
 }
 
 /* 组件选中时的动画效果 */
@@ -153,7 +253,14 @@
 
 /* 组件拖拽放置区域提示 */
 .drop-indicator {
-  @apply absolute inset-0 border-2 border-dashed border-blue-500/50 rounded-lg pointer-events-none opacity-0 transition-opacity duration-300;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 2px dashed #1890ff;
+  pointer-events: none;
+  z-index: 1;
 }
 
 .drag-drop-canvas.drag-over .drop-indicator {
@@ -225,4 +332,387 @@
 .canvas-controls .ant-btn:hover {
   @apply bg-black/5;
   color: #1890ff;
+}
+
+/* 组件列表动画 */
+.component-list-move,
+.component-list-enter-active,
+.component-list-leave-active {
+  transition: all 0.3s ease;
+}
+
+.component-list-enter-from,
+.component-list-leave-to {
+  opacity: 0;
+  transform: scale(0.9);
+}
+
+.component-list-leave-active {
+  position: absolute;
+}
+
+/* 组件拖拽指示器 */
+.component-drag-indicator {
+  position: absolute;
+  pointer-events: none;
+  border: 2px dashed #1890ff;
+  background-color: rgba(24, 144, 255, 0.1);
+  z-index: 1000;
+  transition: all 0.2s ease-in-out;
+}
+
+/* 组件加载状态 */
+.component-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.8);
+  color: #1890ff;
+  font-size: 14px;
+}
+
+/* 组件占位符 */
+.component-placeholder {
+  position: absolute;
+  border: 2px dashed #d9d9d9;
+  background-color: rgba(0, 0, 0, 0.02);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  font-size: 14px;
+}
+
+/* 组件动画效果 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* 组件进入动画 */
+.component-enter-active {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* 组件退出动画 */
+.component-leave-active {
+  animation: fadeIn 0.3s ease-in reverse;
+}
+
+/* 工具栏动画 */
+.component-toolbar {
+  animation: slideIn 0.2s ease-out;
+}
+
+/* 缩放控制点动画 */
+.resize-handle {
+  transition: background-color 0.2s ease;
+}
+
+/* 旋转控制点动画 */
+.rotate-handle {
+  transition: all 0.2s ease;
+}
+
+/* 组件选中效果 */
+.component-wrapper.selected {
+  transition: outline-color 0.2s ease;
+}
+
+/* 组件拖动效果 */
+.component-wrapper.dragging {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  transform: scale(1.02);
+}
+
+/* 组件hover效果 */
+.component-wrapper:hover {
+  transition: outline 0.2s ease;
+}
+
+/* 右键菜单动画 */
+.context-menu {
+  animation: scaleIn 0.15s ease-out;
+}
+
+/* 对齐辅助线动画 */
+.alignment-line {
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* 拖拽指示器动画 */
+.drop-indicator {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* 组件工具栏按钮动画 */
+.component-toolbar .ant-btn {
+  transition: all 0.2s ease;
+}
+
+/* 画布控制按钮动画 */
+.canvas-controls .ant-btn {
+  transition: all 0.2s ease;
+}
+
+/* 组件列表动画 */
+.component-list-move,
+.component-list-enter-active,
+.component-list-leave-active {
+  transition: all 0.3s ease;
+}
+
+.component-list-enter-from,
+.component-list-leave-to {
+  opacity: 0;
+  transform: scale(0.9);
+}
+
+.component-list-leave-active {
+  position: absolute;
+}
+
+/* 组件选中时的动画效果 */
+@keyframes selectedPulse {
+  0% {
+    outline-color: rgba(24, 144, 255, 0.7);
+  }
+  50% {
+    outline-color: rgba(24, 144, 255, 0.3);
+  }
+  100% {
+    outline-color: rgba(24, 144, 255, 0.7);
+  }
+}
+
+.component-wrapper.selected {
+  animation: selectedPulse 2s infinite;
+}
+
+/* 组件拖拽时的动画效果 */
+@keyframes dragPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.component-wrapper.dragging {
+  animation: dragPulse 1s infinite;
+}
+
+/* 组件调整大小时的动画效果 */
+.component-wrapper.resizing {
+  transition: none;
+}
+
+/* 组件旋转时的动画效果 */
+.component-wrapper.rotating {
+  transition: transform 0.1s linear;
+}
+
+/* 画布缩放动画 */
+.drag-drop-canvas {
+  transition: transform 0.3s ease;
+}
+
+/* 滚动条动画 */
+.drag-drop-canvas::-webkit-scrollbar-thumb {
+  transition: background-color 0.3s ease;
+}
+
+/* 工具提示动画 */
+.component-tooltip {
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* 对齐线动画 */
+.alignment-line {
+  animation: fadeIn 0.15s ease-out;
+}
+
+/* 组件组合动画 */
+.component-wrapper.grouped {
+  transition: border-color 0.3s ease;
+}
+
+/* 画布网格背景动画 */
+.drag-drop-canvas {
+  transition: background-color 0.3s ease;
+}
+
+/* 组件占位符动画 */
+.component-placeholder {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* 加载状态动画 */
+@keyframes loadingRotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.component-loading .anticon {
+  animation: loadingRotate 1s linear infinite;
+}
+
+/* 组件拖拽时的动画效果 */
+.component-wrapper {
+  animation: fade-in 0.3s ease-out;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 组件选中时的动画效果 */
+.component-wrapper.selected {
+  animation: select-pulse 0.3s ease-out;
+}
+
+@keyframes select-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(24, 144, 255, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(24, 144, 255, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(24, 144, 255, 0);
+  }
+}
+
+/* 网格背景 */
+.drag-drop-canvas.show-grid {
+  background-image: 
+    linear-gradient(to right, rgba(0, 0, 0, 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* 网格控制面板 */
+.grid-controls {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  background: white;
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 1000;
+}
+
+.control-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.control-label {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.65);
+}
+
+/* 网格吸附指示器 */
+.snap-indicator {
+  position: absolute;
+  background-color: #1890ff;
+  pointer-events: none;
+  z-index: 1000;
+  transition: opacity 0.2s ease-out;
+}
+
+.snap-indicator.horizontal {
+  height: 1px;
+  left: 0;
+  right: 0;
+}
+
+.snap-indicator.vertical {
+  width: 1px;
+  top: 0;
+  bottom: 0;
+}
+
+/* 组件在网格上的视觉反馈 */
+.component-wrapper {
+  transition: transform 0.1s ease-out;
+}
+
+.component-wrapper.snapping {
+  outline: 2px solid #1890ff;
+}
+
+/* 网格控制按钮的悬停效果 */
+.grid-controls .ant-switch {
+  transition: all 0.3s ease;
+}
+
+.grid-controls .ant-switch:hover {
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+/* 网格控制面板的动画 */
+.grid-controls {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }

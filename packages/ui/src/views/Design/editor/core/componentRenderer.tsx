@@ -208,7 +208,7 @@ export const ComponentRenderer = defineComponent({
     })
 
     return () => {
-      const { type, props: componentProps = {}, style = {} } = props.component
+      const { type, props: componentProps = {} } = props.component
       const Component = getComponent(type)
 
       if (!Component) {
@@ -221,7 +221,7 @@ export const ComponentRenderer = defineComponent({
       const mergedProps: Record<string, unknown> = {
         ...componentProps,
         ...boundData,
-        style,
+        style: {},
         ref: componentRef,
       }
 

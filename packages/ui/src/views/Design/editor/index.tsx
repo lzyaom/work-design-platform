@@ -77,7 +77,7 @@ export default defineComponent({
 
     onMounted(() => {
       // 初始化设计数据
-      designStore.initDesign()
+      // designStore.initDesign()
     })
 
     return () => (

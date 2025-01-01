@@ -44,6 +44,7 @@ export default defineComponent({
   name: 'ComponentPalette',
   setup() {
     const selectedCategory = ref<string | null>(null)
+    const draggingComponent = ref<string | null>(null)
 
     // 组件分类
     const componentCategories: CategoryItem[] = [
@@ -70,6 +71,42 @@ export default defineComponent({
             icon: 'select-icon.svg',
             preview: 'select-preview.png',
           },
+          {
+            type: 'radio',
+            title: '单选框',
+            icon: 'radio-icon.svg',
+            preview: 'radio-preview.png',
+          },
+          {
+            type: 'checkbox',
+            title: '复选框',
+            icon: 'checkbox-icon.svg',
+            preview: 'checkbox-preview.png',
+          },
+          {
+            type: 'switch',
+            title: '开关',
+            icon: 'switch-icon.svg',
+            preview: 'switch-preview.png',
+          },
+          {
+            type: 'slider',
+            title: '滑块',
+            icon: 'slider-icon.svg',
+            preview: 'slider-preview.png',
+          },
+          {
+            type: 'rate',
+            title: '评分',
+            icon: 'rate-icon.svg',
+            preview: 'rate-preview.png',
+          },
+          {
+            type: 'upload',
+            title: '上传',
+            icon: 'upload-icon.svg',
+            preview: 'upload-preview.png',
+          },
         ],
       },
       {
@@ -95,6 +132,36 @@ export default defineComponent({
             icon: 'tabs-icon.svg',
             preview: 'tabs-preview.png',
           },
+          {
+            type: 'collapse',
+            title: '折叠面板',
+            icon: 'collapse-icon.svg',
+            preview: 'collapse-preview.png',
+          },
+          {
+            type: 'modal',
+            title: '对话框',
+            icon: 'modal-icon.svg',
+            preview: 'modal-preview.png',
+          },
+          {
+            type: 'drawer',
+            title: '抽屉',
+            icon: 'drawer-icon.svg',
+            preview: 'drawer-preview.png',
+          },
+          {
+            type: 'divider',
+            title: '分割线',
+            icon: 'divider-icon.svg',
+            preview: 'divider-preview.png',
+          },
+          {
+            type: 'space',
+            title: '间距',
+            icon: 'space-icon.svg',
+            preview: 'space-preview.png',
+          },
         ],
       },
       {
@@ -119,6 +186,36 @@ export default defineComponent({
             title: '树形控件',
             icon: 'tree-icon.svg',
             preview: 'tree-preview.png',
+          },
+          {
+            type: 'descriptions',
+            title: '描述列表',
+            icon: 'descriptions-icon.svg',
+            preview: 'descriptions-preview.png',
+          },
+          {
+            type: 'statistic',
+            title: '统计数值',
+            icon: 'statistic-icon.svg',
+            preview: 'statistic-preview.png',
+          },
+          {
+            type: 'timeline',
+            title: '时间轴',
+            icon: 'timeline-icon.svg',
+            preview: 'timeline-preview.png',
+          },
+          {
+            type: 'calendar',
+            title: '日历',
+            icon: 'calendar-icon.svg',
+            preview: 'calendar-preview.png',
+          },
+          {
+            type: 'carousel',
+            title: '轮播图',
+            icon: 'carousel-icon.svg',
+            preview: 'carousel-preview.png',
           },
         ],
       },
@@ -194,15 +291,27 @@ export default defineComponent({
 
     // 处理组件拖拽开始
     const handleDragStart = (e: DragEvent, component: ComponentItem) => {
-      if (e.dataTransfer) {
-        e.dataTransfer.setData(
-          'component',
-          JSON.stringify({
-            type: component.type,
-            title: component.title,
-            icon: component.icon,
-          }),
-        )
+      if (!e.dataTransfer) return
+
+      const componentData = {
+        type: component.type,
+        title: component.title,
+        icon: component.icon,
+      }
+      draggingComponent.value = component.type
+      e.dataTransfer.setData('component-data', JSON.stringify(componentData))
+      e.dataTransfer.effectAllowed = 'copy'
+      // 设置拖拽时的视觉效果
+      if (e.target instanceof HTMLElement) {
+        e.target.classList.add('dragging')
+      }
+    }
+
+    // 处理组件拖拽结束
+    const handleDragEnd = (e: DragEvent) => {
+      draggingComponent.value = null
+      if (e.target instanceof HTMLElement) {
+        e.target.classList.remove('dragging')
       }
     }
 
@@ -232,9 +341,10 @@ export default defineComponent({
                 ?.components.map((component) => (
                   <div
                     key={component.type}
-                    class="component-card"
+                    class={`component-card ${draggingComponent.value === component.type ? 'dragging' : ''}`}
                     draggable
                     onDragstart={(e: DragEvent) => handleDragStart(e, component)}
+                    onDragend={handleDragEnd}
                   >
                     <div class="component-item">
                       {typeof component.icon === 'string' ? (

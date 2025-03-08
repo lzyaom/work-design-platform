@@ -1,57 +1,80 @@
-export class EventEmitter {
-  private events: Record<string, any[]> = {};
+type EventHandler = (...args: any[]) => void
+
+export class EventEmitter<Events extends Record<string, EventHandler>> {
+  private handlers: Map<keyof Events, Set<Events[keyof Events]>> = new Map()
 
   /**
-   * Register an event listener
-   * @param event - The event name
-   * @param callback - The callback function
+   * 监听事件
    */
-  subscribe(event: string, callback: (...args: any[]) => void) {
-    if (!this.events[event]) {
-      this.events[event] = [];
+  on<E extends keyof Events>(event: E, handler: Events[E]): void {
+    if (!this.handlers.has(event)) {
+      this.handlers.set(event, new Set())
     }
-    this.events[event].push(callback);
+    this.handlers.get(event)!.add(handler)
   }
 
   /**
-   * Unregister an event listener
-   * @param event - The event name
-   * @param callback - The callback function
-   * */
-  unsubscribe(event: string, callback: (...args: any[]) => void) {
-    if (this.events[event]) {
-      this.events[event] = this.events[event].filter((cb) => cb !== callback);
+   * 监听一次性事件
+   */
+  once<E extends keyof Events>(event: E, handler: Events[E]): void {
+    const onceHandler = ((...args: Parameters<Events[E]>) => {
+      handler(...args)
+      this.off(event, onceHandler as Events[E])
+    }) as Events[E]
+    
+    this.on(event, onceHandler)
+  }
+
+  /**
+   * 移除事件监听
+   */
+  off<E extends keyof Events>(event: E, handler: Events[E]): void {
+    const handlers = this.handlers.get(event)
+    if (handlers) {
+      handlers.delete(handler)
+      if (handlers.size === 0) {
+        this.handlers.delete(event)
+      }
     }
   }
 
   /**
-   * Emit an event
-   * @param event - The event name
-   * @param args - The arguments to pass to the callback functions
+   * 触发事件
    */
-  emit(event: string, ...args: any[]) {
-    if (this.events[event]) {
-      this.events[event].forEach((callback) => callback(...args));
+  emit<E extends keyof Events>(
+    event: E,
+    ...args: Parameters<Events[E]>
+  ): void {
+    const handlers = this.handlers.get(event)
+    if (handlers) {
+      handlers.forEach(handler => {
+        try {
+          handler(...args)
+        } catch (error) {
+          console.error(`Error in event handler for ${String(event)}:`, error)
+        }
+      })
     }
   }
 
   /**
-   * Only emit an event once
-   * @param event - The event name
-   * @param callback - The callback function
+   * 移除所有事件监听
    */
-  once(event: string, callback: (...args: any[]) => void) {
-    const onceCallback = (...args: any[]) => {
-      callback(...args);
-      this.unsubscribe(event, onceCallback);
-    };
-    this.subscribe(event, onceCallback);
+  removeAllListeners(): void {
+    this.handlers.clear()
   }
 
   /**
-   * Clear all event listeners
+   * 获取事件监听器数量
    */
-  clear() {
-    this.events = {};
+  listenerCount(event: keyof Events): number {
+    return this.handlers.get(event)?.size ?? 0
+  }
+
+  /**
+   * 获取所有已注册的事件
+   */
+  eventNames(): Array<keyof Events> {
+    return Array.from(this.handlers.keys())
   }
 }

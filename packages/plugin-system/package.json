@@ -1,12 +1,71 @@
 {
-  "name": "plugin-system",
+  "name": "@work-designer/plugin-system",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Enterprise-grade plugin system",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc -p tsconfig.json",
+    "build:watch": "tsc -p tsconfig.json -w",
+    "test": "jest --config jest.config.ts",
+    "test:watch": "jest --config jest.config.ts --watch",
+    "test:coverage": "jest --config jest.config.ts --coverage",
+    "lint": "eslint src/**/*.ts",
+    "clean": "rimraf dist coverage",
+    "prepare": "npm run clean && npm run build"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "dependencies": {
+    "semver": "^7.5.4",
+    "share": "workspace:*"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.1.4",
+    "@testing-library/react": "^14.0.0",
+    "@types/jest": "^29.5.5",
+    "@types/node": "^20.8.0",
+    "@types/react": "^18.2.28",
+    "@types/react-dom": "^18.2.13",
+    "@types/semver": "^7.5.3",
+    "@types/testing-library__jest-dom": "^5.14.9",
+    "@typescript-eslint/eslint-plugin": "^6.7.3",
+    "@typescript-eslint/parser": "^6.7.3",
+    "eslint": "^8.50.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "rimraf": "^5.0.1",
+    "ts-jest": "^29.1.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "files": [
+    "dist",
+    "src",
+    "LICENSE",
+    "README.md",
+    "SECURITY.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/work-designer/plugin-system.git"
+  },
+  "keywords": [
+    "plugin",
+    "sandbox",
+    "security",
+    "enterprise"
+  ],
+  "author": "Work Designer Team",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/work-designer/plugin-system/issues"
+  },
+  "homepage": "https://github.com/work-designer/plugin-system#readme",
+  "engines": {
+    "node": ">=16",
+    "npm": ">=8"
+  }
 }

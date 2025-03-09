@@ -1,5 +1,6 @@
 import { EventEmitter } from 'share'
 import { Logger } from './logger'
+import { generateId } from '../utils'
 
 export interface Breakpoint {
   id: string
@@ -131,7 +132,7 @@ export class Debugger extends EventEmitter<DebuggerEvents> {
    * 设置断点
    */
   async setBreakpoint(breakpoint: Omit<Breakpoint, 'id'>): Promise<Breakpoint> {
-    const id = this.generateBreakpointId()
+    const id = generateId()
     const bp: Breakpoint = { ...breakpoint, id, enabled: true }
 
     try {
@@ -279,7 +280,7 @@ export class Debugger extends EventEmitter<DebuggerEvents> {
     window.XMLHttpRequest = function () {
       const xhr = new XHR()
       const requestData: NetworkRequest = {
-        id: Math.random().toString(36).substr(2, 9),
+        id: generateId(),
         url: '',
         method: 'GET',
         headers: {},
@@ -337,7 +338,7 @@ export class Debugger extends EventEmitter<DebuggerEvents> {
   ): NetworkRequest {
     const url = typeof input === 'string' ? input : input.url
     return {
-      id: Math.random().toString(36).substr(2, 9),
+      id: generateId(),
       url,
       method: init?.method || 'GET',
       headers: (init?.headers as Record<string, string>) || {},
@@ -383,9 +384,5 @@ export class Debugger extends EventEmitter<DebuggerEvents> {
   ): Promise<any> {
     // TODO: 实现与插件沙箱的调试通信
     return Promise.resolve()
-  }
-
-  private generateBreakpointId(): string {
-    return Math.random().toString(36).substring(2, 10)
   }
 }

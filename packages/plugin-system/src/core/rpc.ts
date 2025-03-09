@@ -1,4 +1,5 @@
 import { IPCBus, IPCOptions } from './ipc'
+import { generateId } from '../utils'
 
 // 定义RPC特有的选项，不包括继承的IPCOptions
 interface RPCSpecificOptions {
@@ -114,7 +115,7 @@ export class RPCManager {
     }
 
     return this.executeWithRetry(async () => {
-      const id = this.generateRequestId()
+      const id = generateId(Date.now().toString())
 
       try {
         return await Promise.race([
@@ -125,10 +126,14 @@ export class RPCManager {
         if (error instanceof RPCError) {
           throw error
         }
-        throw new RPCError(error.message || 'RPC call failed', 'CALL_FAILED', {
-          method,
-          args,
-        })
+        throw new RPCError(
+          error instanceof Error ? error.message : 'RPC call failed',
+          'CALL_FAILED',
+          {
+            method,
+            args,
+          }
+        )
       }
     }, retries)
   }
@@ -156,7 +161,7 @@ export class RPCManager {
         this.sendResponse(request.id, result, 'success', source)
       } catch (error) {
         throw new RPCError(
-          error.message || 'Method execution failed',
+          error instanceof Error ? error.message : 'Method execution failed',
           'EXECUTION_FAILED',
           { method: request.method, args: request.args }
         )
@@ -166,12 +171,14 @@ export class RPCManager {
         this.sendResponse(request.id, null, 'error', source, error)
       } else {
         const rpcError = new RPCError('Internal RPC error', 'INTERNAL_ERROR', {
-          originalError: error.message,
+          originalError: error instanceof Error ? error.message : String(error),
         })
         this.sendResponse(request.id, null, 'error', source, rpcError)
       }
 
-      this.options.errorHandler(error)
+      if (error instanceof RPCError) {
+        this.options.errorHandler(error)
+      }
     }
   }
 
@@ -282,13 +289,6 @@ export class RPCManager {
   }
 
   /**
-   * 生成请求ID
-   */
-  private generateRequestId(): string {
-    return `${Date.now()}-${Math.random().toString(36).substring(2, 10)}`
-  }
-
-  /**
    * 带重试的执行
    */
   private async executeWithRetry<T>(
@@ -301,7 +301,7 @@ export class RPCManager {
       try {
         return await operation()
       } catch (error) {
-        lastError = error
+        lastError = error instanceof Error ? error : new Error(String(error))
         if (i === retries) break
 
         // 指数退避重试

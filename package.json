@@ -9,6 +9,7 @@
   ],
   "scripts": {
     "dev": "pnpm -F ui dev",
+    "dev:plugin": "pnpm -F plugin-store dev",
     "prepare": "husky",
     "commit": "git-cz",
     "release": "standard-version",

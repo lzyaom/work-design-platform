@@ -37,6 +37,7 @@
     "husky": "catalog:",
     "lint-staged": "catalog:",
     "prettier": "catalog:",
+    "rimraf": "^5.0.1",
     "standard-version": "catalog:",
     "typescript": "catalog:",
     "typescript-eslint": "catalog:"

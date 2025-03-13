@@ -20,7 +20,7 @@ export default [
   {
     path: '/login',
     name: 'Login',
-    component: () => import(/* webpackChunkName: "login" */ '../views/Login.vue'),
+    component: () => import(/* webpackChunkName: "login" */ '../views/Login/index.tsx'),
     meta: {
       requiresAuth: false,
       title: '登录',

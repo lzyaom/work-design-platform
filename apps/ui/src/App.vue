@@ -1,7 +1,13 @@
-<script setup lang="ts">
-import AppLayout from './layout/AppLayout'
+<script lang="ts" setup>
+defineOptions({
+  name: 'App',
+})
 </script>
 
 <template>
-  <AppLayout />
+  <router-view v-slot="{ Component }">
+    <transition name="fade" mode="out-in">
+      <component :is="Component" />
+    </transition>
+  </router-view>
 </template>

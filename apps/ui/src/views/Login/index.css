@@ -129,18 +129,25 @@
   background: #395470 !important;
 }
 
-.forgot-password {
-  display: block;
-  text-align: center;
+.links-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.forgot-password, .register-link {
   color: #4A6B8A;
   text-decoration: none;
-  transition: color 0.2s ease;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+  cursor: pointer;
 }
 
-.forgot-password:hover {
+.forgot-password:hover, .register-link:hover {
   color: #395470;
+  text-decoration: underline;
 }
-
 /* Ant Design Form Item Overrides */
 :deep(.ant-form-item) {
   margin-bottom: 1.5rem;
@@ -169,5 +176,11 @@
   
   .verification-code-btn {
     min-width: 90px;
+  }
+  
+  .links-container {
+    flex-direction: column;
+    gap: 0.75rem;
+    text-align: center;
   }
 }

@@ -1,6 +1,7 @@
 import { defineComponent, ref } from 'vue'
 import { Input, Button, Form, message } from 'ant-design-vue'
 import { axios } from '@/plugins/axios'
+import { RouterLink } from 'vue-router'
 import './index.css'
 
 export default defineComponent({
@@ -77,19 +78,19 @@ export default defineComponent({
         <div class="login-background"></div>
         <div class="login-content">
           <div class="login-card">
-            <h1 class="login-title">Welcome Back</h1>
+            <h1 class="login-title">欢迎回来</h1>
             <Form class="login-form" onSubmit={handleSubmit}>
               <Form.Item>
                 <Input
                   v-model={[form.value.email, 'value']}
-                  placeholder="Email"
+                  placeholder="请输入邮箱"
                   class="login-input"
                 />
               </Form.Item>
               <Form.Item>
                 <Input
                   v-model={[form.value.password, 'value']}
-                  placeholder="Password"
+                  placeholder="请输入密码"
                   type="password"
                   class="login-input"
                 />
@@ -98,7 +99,7 @@ export default defineComponent({
                 <div class="verification-code-container">
                   <Input
                     v-model={[form.value.verificationCode, 'value']}
-                    placeholder="Verification Code"
+                    placeholder="请输入验证码"
                     class="login-input"
                   />
                   <Button
@@ -107,7 +108,7 @@ export default defineComponent({
                     loading={loading.value}
                     class="verification-code-btn"
                   >
-                    {countdown.value > 0 ? `${countdown.value}s` : 'Get Code'}
+                    {countdown.value > 0 ? `${countdown.value}s` : '获取验证码'}
                   </Button>
                 </div>
               </Form.Item>
@@ -118,14 +119,17 @@ export default defineComponent({
                   loading={loading.value}
                   class="login-button"
                 >
-                  Login
+                  登录
                 </Button>
               </Form.Item>
-              <Form.Item>
+              <div class="links-container">
                 <a href="#" class="forgot-password">
-                  Forgot password?
+                  忘记密码?
                 </a>
-              </Form.Item>
+                <RouterLink to={{ name: 'Register' }} class="register-link font-medium">
+                  新用户？立即注册
+                </RouterLink>
+              </div>
             </Form>
           </div>
         </div>

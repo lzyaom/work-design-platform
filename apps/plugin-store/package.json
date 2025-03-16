@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "@playwright/test": "catalog:playwright",
-    "@tailwindcss/vite": "catalog:tailwindcss",
+    "autoprefixer": "catalog:",
     "@tsconfig/node22": "catalog:types",
     "@types/jsdom": "catalog:types",
     "@types/node": "catalog:types",

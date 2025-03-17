@@ -1,0 +1,64 @@
+.default-nav {
+  display: flex;
+  align-items: center;
+}
+
+.username {
+  color: rgba(255, 255, 255, 0.85);
+  margin-left: 8px;
+}
+
+:deep(.ant-dropdown-menu) {
+  min-width: 160px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+}
+
+.notification-menu {
+  width: 300px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.notification-item {
+  padding: 8px 0;
+}
+
+.notification-title {
+  color: rgba(0, 0, 0, 0.85);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.notification-time {
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.empty-tip {
+  padding: 16px;
+  text-align: center;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.view-all {
+  text-align: center;
+  color: #1890ff;
+}
+
+:deep(.ant-dropdown-menu-item) {
+  padding: 8px 12px;
+}
+
+:deep(.ant-dropdown-menu-item:hover) {
+  background: rgba(24, 144, 255, 0.1);
+}
+
+:deep(.ant-dropdown-menu-item .anticon) {
+  margin-right: 8px;
+}
+
+:deep(.ant-avatar) {
+  background: #1890ff;
+}

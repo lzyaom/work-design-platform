@@ -1,19 +1,8 @@
 import { defineComponent, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import {
-  DashboardOutlined,
-  LayoutOutlined,
-  CodeOutlined,
-  UnorderedListOutlined,
-  MonitorOutlined,
-  FileTextOutlined,
-  EditOutlined,
-  EyeOutlined,
-} from '@ant-design/icons-vue'
 import { Menu } from 'ant-design-vue'
 import type { MenuProps } from 'ant-design-vue'
-
-const { Item: MenuItem, SubMenu } = Menu
+import { useMenuItems } from '../../composables/useMenuItems'
 
 export default defineComponent({
   name: 'DefaultSidebar',
@@ -30,6 +19,9 @@ export default defineComponent({
     const selectedKeys = ref<string[]>([route.name as string])
     const openKeys = ref<string[]>([])
 
+    // 生成菜单项
+    const { menuItems } = useMenuItems(router.getRoutes())
+
     // 监听路由变化
     watch(
       () => route.name,
@@ -43,7 +35,6 @@ export default defineComponent({
           }
         }
       },
-      { immediate: true },
     )
 
     // 监听折叠状态
@@ -63,8 +54,9 @@ export default defineComponent({
 
     // 获取父级菜单 key
     const getParentKey = (key: string): string | null => {
-      if (key.startsWith('design-')) return 'design'
-      if (key.startsWith('program-')) return 'program'
+      if (key.includes('-')) {
+        return key.split('-')[0]
+      }
       return null
     }
 
@@ -80,82 +72,9 @@ export default defineComponent({
         mode="inline"
         class="sidebar-menu"
         inline-collapsed={props.collapsed}
+        items={menuItems.value}
         onClick={handleMenuClick}
-      >
-        <MenuItem key="dashboard">
-          {{
-            icon: () => <DashboardOutlined />,
-            default: () => <span class="menu-title">仪表盘</span>,
-          }}
-        </MenuItem>
-
-        <SubMenu key="design">
-          {{
-            icon: () => <LayoutOutlined />,
-            title: () => <span class="menu-title">设计</span>,
-            default: () => (
-              <>
-                <MenuItem key="design-editor">
-                  {{
-                    icon: () => <EditOutlined />,
-                    default: () => <span class="menu-title">编辑器</span>,
-                  }}
-                </MenuItem>
-                <MenuItem key="design-preview">
-                  {{
-                    icon: () => <EyeOutlined />,
-                    default: () => <span class="menu-title">预览</span>,
-                  }}
-                </MenuItem>
-              </>
-            ),
-          }}
-        </SubMenu>
-
-        <SubMenu key="program">
-          {{
-            icon: () => <CodeOutlined />,
-            title: () => <span class="menu-title">编程</span>,
-            default: () => (
-              <>
-                <MenuItem key="program-editor">
-                  {{
-                    icon: () => <EditOutlined />,
-                    default: () => <span class="menu-title">编辑器</span>,
-                  }}
-                </MenuItem>
-                <MenuItem key="program-preview">
-                  {{
-                    icon: () => <EyeOutlined />,
-                    default: () => <span class="menu-title">预览</span>,
-                  }}
-                </MenuItem>
-              </>
-            ),
-          }}
-        </SubMenu>
-
-        <MenuItem key="tasks">
-          {{
-            icon: () => <UnorderedListOutlined />,
-            default: () => <span class="menu-title">任务</span>,
-          }}
-        </MenuItem>
-
-        <MenuItem key="monitor">
-          {{
-            icon: () => <MonitorOutlined />,
-            default: () => <span class="menu-title">监控</span>,
-          }}
-        </MenuItem>
-
-        <MenuItem key="logs">
-          {{
-            icon: () => <FileTextOutlined />,
-            default: () => <span class="menu-title">日志</span>,
-          }}
-        </MenuItem>
-      </Menu>
+      />
     )
   },
 })

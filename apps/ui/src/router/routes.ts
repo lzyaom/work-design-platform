@@ -8,7 +8,7 @@ declare module 'vue-router' {
     icon?: string
     hideInBreadcrumb?: boolean
     hideInTab?: boolean
-    hideInSidebar?: boolean
+    showSidebar?: boolean
   }
 }
 
@@ -37,19 +37,20 @@ export default [
   },
   {
     path: '/dashboard',
-    name: 'Dashboard',
+    component: () => import('@/layout/AppLayout'),
     meta: {
       requiresAuth: true,
-      title: '仪表盘',
+      hideInMenu: true,
     },
     children: [
       {
-        path: 'overview',
-        name: 'DashboardOverview',
-        component: () => import('../views/Dashboard/Overview.tsx'),
+        path: '',
+        name: 'Dashboard',
+        component: () => import('@/views/Dashboard/Overview.tsx'),
         meta: {
-          title: '概览',
+          title: '仪表盘',
           requiresAuth: true,
+          showSidebar: true,
         },
       },
       {
@@ -59,26 +60,27 @@ export default [
         meta: {
           title: '分析',
           requiresAuth: true,
+          showSidebar: false,
         },
       },
     ],
   },
   {
     path: '/design',
-    name: 'Design',
     meta: {
       requiresAuth: true,
       hideInMenu: true,
     },
+    component: () => import('@/layout/AppLayout'),
     children: [
       {
         path: '',
-        name: 'DesignList',
+        name: 'Design',
         component: () => import(/* webpackChunkName: "design" */ '../views/Design/index.tsx'),
         meta: {
           title: '设计',
           requiresAuth: true,
-          hideInMenu: false,
+          showSidebar: true,
         },
       },
       {
@@ -95,19 +97,19 @@ export default [
   },
   {
     path: '/program',
-    name: 'Program',
     meta: {
       requiresAuth: true,
       hideInMenu: true,
     },
+    component: () => import('@/layout/AppLayout'),
     children: [
       {
         path: '',
-        name: 'ProgramList',
+        name: 'Program',
         component: () => import(/* webpackChunkName: "program" */ '../views/Program/index.vue'),
         meta: {
           title: '编程',
-          hideInMenu: false,
+          showSidebar: true,
         },
       },
       {
@@ -123,30 +125,57 @@ export default [
   },
   {
     path: '/tasks',
-    name: 'Tasks',
-    component: () => import('@/views/Tasks/index'),
+    component: () => import('@/layout/AppLayout'),
     meta: {
       requiresAuth: true,
-      title: '任务管理',
     },
+    children: [
+      {
+        path: '',
+        name: 'Tasks',
+        component: () => import('@/views/Tasks/index'),
+        meta: {
+          title: '任务管理',
+          showSidebar: true,
+        },
+      },
+    ],
   },
   {
     path: '/monitor',
-    name: 'Monitor',
-    component: () => import('@/views/Monitor/index'),
+    component: () => import('@/layout/AppLayout'),
     meta: {
       requiresAuth: true,
-      title: '监控管理',
     },
+    children: [
+      {
+        path: '',
+        name: 'Monitor',
+        component: () => import('@/views/Monitor/index'),
+        meta: {
+          title: '监控管理',
+          showSidebar: true,
+        },
+      },
+    ],
   },
   {
     path: '/logs',
-    name: 'Logs',
-    component: () => import('@/views/Log/index'),
+    component: () => import('@/layout/AppLayout'),
     meta: {
       requiresAuth: true,
-      title: '日志管理',
     },
+    children: [
+      {
+        path: '',
+        name: 'Logs',
+        component: () => import('@/views/Log/index'),
+        meta: {
+          title: '日志管理',
+          showSidebar: true,
+        },
+      },
+    ],
   },
   { path: '/:pathMatch(.*)*', name: 'NotFound', redirect: '/login' },
 ] as RouteRecordRaw[]

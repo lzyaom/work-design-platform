@@ -1,41 +1,117 @@
-import { defineComponent, ref } from 'vue'
+import { defineComponent, Transition, type Component, type PropType, type VNode } from 'vue'
+import { RouterView, type RouteLocationNormalizedLoaded } from 'vue-router'
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons-vue'
 import { Button } from 'ant-design-vue'
-import DefaultNav from './components/nav/DefaultNav.vue'
-import DefaultSidebar from './components/sidebar/DefaultSidebar.vue'
+import DefaultNav from './components/nav/DefaultNav.tsx'
+import DefaultSidebar from './components/sidebar/DefaultSidebar'
+import type { LayoutSettings } from './types'
+import { useLayout } from './composables/useLayout'
 import './AppLayout.css'
 
 export default defineComponent({
   name: 'AppLayout',
-  setup() {
-    const collapsed = ref(false)
+  props: {
+    settings: {
+      type: Object as PropType<Partial<LayoutSettings>>,
+      default: () => ({}),
+    },
+  },
+  setup(props) {
+    const { collapsed, toggleCollapsed, isMobile, settings } = useLayout(props.settings)
 
-    const toggleCollapsed = () => {
-      collapsed.value = !collapsed.value
+    return {
+      toggleCollapsed,
+      collapsed,
+      isMobile,
+      layoutSettings: settings,
     }
-
-    return () => (
+  },
+  render() {
+    const { collapsed, isMobile, layoutSettings, toggleCollapsed } = this
+    // 渲染自定义组件或默认组件
+    const renderComponent = (
+      slot: keyof LayoutSettings['components'],
+      defaultComponent: Component | null,
+    ) => {
+      return layoutSettings.components[slot] || defaultComponent
+    }
+    return (
       <div class="h-screen flex">
-        <aside class={`glass-sidebar ${collapsed.value ? 'collapsed' : ''} md:!translate-x-0`}>
+        {/* 侧边栏 */}
+        <aside
+          class={{
+            'glass-sidebar': true,
+            collapsed: collapsed,
+            'md:!translate-x-0': true,
+            fixed: isMobile,
+          }}
+          style={{
+            width: collapsed
+              ? `${layoutSettings.layout.collapsedWidth}px`
+              : `${layoutSettings.layout.sidebarWidth}px`,
+          }}
+        >
+          {/* Logo区域 */}
           <div class="logo">
-            <img src="../assets/logo.svg" alt="logo" class="w-8 h-8" />
+            {renderComponent('logo', <img src="@/assets/logo.svg" alt="logo" class="w-8 h-8" />)}
           </div>
-          <DefaultSidebar v-model:collapsed={collapsed.value} />
+
+          {/* 侧边栏内容 */}
+          {renderComponent('sidebar', <DefaultSidebar v-model:collapsed={collapsed} />)}
         </aside>
-        <div class={`main-content ${collapsed.value ? 'collapsed' : ''}`}>
-          <nav class="glass-navbar flex items-center justify-between px-4">
-            <div class="flex items-center">
-              <Button type="text" class="glass-button !border-none" onClick={toggleCollapsed}>
-                {collapsed.value ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-              </Button>
-              <DefaultNav />
+
+        {/* 主内容区域 */}
+        <div
+          class={{
+            'main-content': true,
+            collapsed: collapsed,
+            'ml-0': isMobile,
+          }}
+        >
+          {/* 头部导航 */}
+          <nav
+            class="glass-navbar px-4"
+            style={{ height: `${layoutSettings.layout.headerHeight}px` }}
+          >
+            <div class="flex justify-between items-center h-full">
+              {layoutSettings.layout.sidebarCollapsible && (
+                <Button type="text" class="glass-button !border-none" onClick={toggleCollapsed}>
+                  {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+                </Button>
+              )}
+              {renderComponent('header', <DefaultNav />)}
             </div>
           </nav>
-          <main class="h-[calc(100vh-4rem)] overflow-auto">
+
+          {/* 主内容 */}
+          <main
+            class="overflow-auto"
+            style={{ height: `calc(100vh - ${layoutSettings.layout.headerHeight}px)` }}
+          >
             <div class="glass-container h-full">
-              <router-view />
+              <RouterView
+                v-slots={{
+                  default: ({
+                    Component: PageComponent,
+                  }: {
+                    Component: VNode
+                    route: RouteLocationNormalizedLoaded
+                  }) => {
+                    return (
+                      <Transition name="fade" mode="out-in">
+                        {PageComponent}
+                      </Transition>
+                    )
+                  },
+                }}
+              />
             </div>
           </main>
+
+          {/* 页脚 */}
+          {layoutSettings.components.footer && (
+            <footer class="glass-footer">{renderComponent('footer', null)}</footer>
+          )}
         </div>
       </div>
     )

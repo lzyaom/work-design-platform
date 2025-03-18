@@ -8,8 +8,7 @@ import {
   LogoutOutlined,
 } from '@ant-design/icons-vue'
 import type { MenuProps } from 'ant-design-vue'
-import { Menu, Dropdown, Button, Badge, MenuItem, MenuDivider, Avatar } from 'ant-design-vue'
-import './index.module.css'
+import { Menu, Dropdown, Button, Badge, MenuItem, MenuDivider, Avatar, Input } from 'ant-design-vue'
 
 export default defineComponent({
   name: 'DefaultNav',
@@ -52,54 +51,42 @@ export default defineComponent({
   render() {
     const { currentLang, notifications, userInfo, handleLangChange, handleLogout } = this
     return (
-      <div class="default-nav space-x-4">
-        {/* 语言切换 */}
-        <Dropdown>
-          {{
-            default: () => (
-              <Button type="text">
-                <TranslationOutlined />
-                {currentLang}
-              </Button>
-            ),
-            overlay: () => (
-              <Menu onClick={handleLangChange}>
-                <MenuItem key="zh-CN">简体中文</MenuItem>
-                <MenuItem key="en-US">English</MenuItem>
-              </Menu>
-            ),
-          }}
-        </Dropdown>
-
+      <div class="default-nav flex items-center space-x-3">
+        {/* 搜索框 */}
+        <div class="search-box">
+          <Input type="text" placeholder="搜索..." />
+        </div>
         {/* 通知中心 */}
-        <Dropdown>
+        <Dropdown trigger="click" placement="bottom" arrow>
           {{
             default: () => (
               <Badge count={notifications.length}>
                 <Button type="text">
-                  <BellOutlined />
+                  <BellOutlined class="text-base leading-5 align-top" />
                 </Button>
               </Badge>
             ),
             overlay: () => (
-              <Menu class="notification-menu">
+              <Menu class="notification-menu w-72 max-h-[400px] overflow-auto">
                 {notifications.length === 0 ? (
                   <MenuItem>
-                    <div class="empty-tip">暂无通知</div>
+                    <div class="empty-tip text-center p-4 text-gray-500">暂无通知</div>
                   </MenuItem>
                 ) : (
                   <>
                     {notifications.map((item) => (
                       <MenuItem key={item.id}>
-                        <div class="notification-item">
-                          <div class="notification-title">{item.title}</div>
-                          <div class="notification-time">{item.time}</div>
+                        <div class="notification-item px-2">
+                          <div class="notification-title text-gray-700 hover:text-blue-500 leading-6">
+                            {item.title}
+                          </div>
+                          <div class="notification-time text-xs text-gray-400">{item.time}</div>
                         </div>
                       </MenuItem>
                     ))}
                     <MenuDivider />
                     <MenuItem>
-                      <div class="view-all">查看全部</div>
+                      <div class="view-all text-center text-blue-500">查看全部</div>
                     </MenuItem>
                   </>
                 )}
@@ -107,29 +94,43 @@ export default defineComponent({
             ),
           }}
         </Dropdown>
-
-        {/* 用户菜单 */}
-        <Dropdown>
+        {/* 语言切换 */}
+        <Dropdown trigger="click" placement="bottom" arrow>
           {{
             default: () => (
-              <>
-                <Avatar src={userInfo.avatar} />
-                <span class="username">{userInfo.name}</span>
-              </>
+              <Button type="text">
+                <TranslationOutlined class="align-middle" />
+                {currentLang}
+              </Button>
             ),
             overlay: () => (
-              <Menu>
-                <MenuItem key="profile">
-                  <UserOutlined />
+              <Menu class="lang-menu w-32 text-center" onClick={handleLangChange}>
+                <MenuItem key="zh-CN">简体中文</MenuItem>
+                <MenuItem key="en-US">English</MenuItem>
+              </Menu>
+            ),
+          }}
+        </Dropdown>
+
+        {/* 用户菜单 */}
+        <Dropdown trigger="click" placement="bottom" arrow>
+          {{
+            default: () => (
+              <Button type="text" class="user-info flex items-center">
+                <Avatar src={userInfo.avatar} shape="circle" class="bg-blue-400" />
+                <span class="username ml-2">{userInfo.name}</span>
+              </Button>
+            ),
+            overlay: () => (
+              <Menu class="user-menu">
+                <MenuItem key="profile" icon={<UserOutlined />}>
                   个人中心
                 </MenuItem>
-                <MenuItem key="settings">
-                  <SettingOutlined />
+                <MenuItem key="settings" icon={<SettingOutlined />}>
                   系统设置
                 </MenuItem>
                 <MenuDivider />
-                <MenuItem key="logout" onClick={handleLogout}>
-                  <LogoutOutlined />
+                <MenuItem key="logout" icon={<LogoutOutlined />} onClick={handleLogout}>
                   退出登录
                 </MenuItem>
               </Menu>

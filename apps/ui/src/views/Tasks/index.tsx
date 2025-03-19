@@ -13,6 +13,7 @@ import {
   Progress,
   Alert,
   message,
+  Pagination,
 } from 'ant-design-vue'
 import type { TableColumnsType } from 'ant-design-vue'
 import type { Key } from 'ant-design-vue/es/table/interface'
@@ -77,7 +78,7 @@ interface TaskStats {
 }
 
 export default defineComponent({
-  name: 'Tasks',
+  name: 'TaskManagement',
   setup() {
     // 状态定义
     const state = ref({
@@ -85,7 +86,7 @@ export default defineComponent({
       pagination: {
         current: 1,
         pageSize: 10,
-        total: 0,
+        total: 20,
       },
       logs: [] as Array<{
         time: string
@@ -166,7 +167,9 @@ export default defineComponent({
         title: '运行状态',
         dataIndex: 'status',
         key: 'status',
-        width: 120,
+        width: 100,
+        sorter: (a: Task, b: Task) => a.status.localeCompare(b.status),
+        showSorterTooltip: false,
         customRender: ({ text }: { text: TaskStatus }) => (
           <Tag color={text === TaskStatus.RUNNING ? '#52c41a' : '#ff4d4f'}>
             {text === TaskStatus.RUNNING ? '运行中' : '已停止'}
@@ -178,6 +181,8 @@ export default defineComponent({
         dataIndex: 'priority',
         key: 'priority',
         width: 100,
+        sorter: (a: Task, b: Task) => a.priority.localeCompare(b.priority),
+        showSorterTooltip: false,
         customRender: ({ text }: { text: Priority }) => (
           <Tag color={priorityColors[text]}>
             {text === Priority.HIGH ? '高' : text === Priority.MEDIUM ? '中' : '低'}
@@ -188,34 +193,34 @@ export default defineComponent({
         title: '运行时长',
         dataIndex: 'duration',
         key: 'duration',
-        width: 120,
+        width: 100,
       },
-      {
-        title: 'CPU占用',
-        dataIndex: 'cpu',
-        key: 'cpu',
-        width: 150,
-        customRender: ({ text }: { text: string; record: Task }) => (
-          <Progress
-            percent={Number(text.replace('%', ''))}
-            status={Number(text.replace('%', '')) > 80 ? 'exception' : 'normal'}
-            size="small"
-          />
-        ),
-      },
-      {
-        title: '内存占用',
-        dataIndex: 'memory',
-        key: 'memory',
-        width: 150,
-        customRender: ({ text }: { text: string; record: Task }) => (
-          <Progress
-            percent={Number(text.replace(/[A-Za-z%]/g, ''))}
-            status={Number(text.replace(/[A-Za-z%]/g, '')) > 80 ? 'exception' : 'normal'}
-            size="small"
-          />
-        ),
-      },
+      // {
+      //   title: 'CPU占用',
+      //   dataIndex: 'cpu',
+      //   key: 'cpu',
+      //   width: 150,
+      //   customRender: ({ text }: { text: string; record: Task }) => (
+      //     <Progress
+      //       percent={Number(text.replace('%', ''))}
+      //       status={Number(text.replace('%', '')) > 80 ? 'exception' : 'normal'}
+      //       size="small"
+      //     />
+      //   ),
+      // },
+      // {
+      //   title: '内存占用',
+      //   dataIndex: 'memory',
+      //   key: 'memory',
+      //   width: 150,
+      //   customRender: ({ text }: { text: string; record: Task }) => (
+      //     <Progress
+      //       percent={Number(text.replace(/[A-Za-z%]/g, ''))}
+      //       status={Number(text.replace(/[A-Za-z%]/g, '')) > 80 ? 'exception' : 'normal'}
+      //       size="small"
+      //     />
+      //   ),
+      // },
       {
         title: '执行进度',
         dataIndex: 'progress',
@@ -240,8 +245,7 @@ export default defineComponent({
       {
         title: '操作',
         key: 'action',
-        fixed: 'right',
-        width: 260,
+        width: 200,
         customRender: ({ record }: { record: Task }) => (
           <Space>
             <Button type="link" onClick={() => showTaskDetail(record)}>
@@ -499,79 +503,89 @@ export default defineComponent({
       <div class="p-6">
         {/* 统计卡片 */}
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <Card hoverable class="stat-card stat-card-primary">
-            <div class="grid grid-cols-2 gap-4">
+          <Card
+            hoverable
+            class="stat-card stat-card-primary rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-r from-blue-50 to-blue-100"
+          >
+            <div class="grid grid-cols-2 gap-4 relative">
+              <div class="absolute right-2 top-0 text-4xl opacity-50">📊</div>
               <div class="stat-item">
-                <div class="text-lg text-gray-600 mb-2">总任务数</div>
-                <div class="text-3xl font-bold text-primary">{taskStats.value.total}</div>
-                <div class="text-sm text-gray-500 mt-2">所有任务</div>
+                <div class="text-lg text-blue-600 mb-2 font-semibold">总任务数</div>
+                <div class="text-4xl font-black text-blue-800">{taskStats.value.total}</div>
+                <div class="text-sm text-blue-500 mt-2">📋 所有任务</div>
               </div>
               <div class="stat-item">
-                <div class="text-lg text-gray-600 mb-2">运行中</div>
-                <div class="text-3xl font-bold text-success">{taskStats.value.running}</div>
-                <div class="text-sm text-gray-500 mt-2">活跃任务</div>
-              </div>
-            </div>
-          </Card>
-
-          <Card hoverable class="stat-card stat-card-success">
-            <div class="grid grid-cols-2 gap-4">
-              <div class="stat-item">
-                <div class="text-lg text-gray-600 mb-2">已完成</div>
-                <div class="text-3xl font-bold text-primary">{taskStats.value.completed}</div>
-                <div class="text-sm text-gray-500 mt-2">完成任务</div>
-              </div>
-              <div class="stat-item">
-                <div class="text-lg text-gray-600 mb-2">成功率</div>
-                <div class="text-3xl font-bold text-success">{taskStats.value.successRate}%</div>
-                <div class="text-sm text-gray-500 mt-2">任务成功率</div>
+                <div class="text-lg text-green-600 mb-2 font-semibold">运行中</div>
+                <div class="text-4xl font-black text-green-800">{taskStats.value.running}</div>
+                <div class="text-sm text-green-500 mt-2">🚀 活跃任务</div>
               </div>
             </div>
           </Card>
 
-          <Card hoverable class="stat-card stat-card-warning">
-            <div class="grid grid-cols-2 gap-4">
+          <Card
+            hoverable
+            class="stat-card stat-card-success rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-r from-green-50 to-green-100"
+          >
+            <div class="grid grid-cols-2 gap-4 relative">
+              <div class="absolute right-2 top-0 text-4xl opacity-50">✅</div>
               <div class="stat-item">
-                <div class="text-lg text-gray-600 mb-2">失败数</div>
-                <div class="text-3xl font-bold text-error">{taskStats.value.failed}</div>
-                <div class="text-sm text-gray-500 mt-2">异常任务</div>
+                <div class="text-lg text-purple-600 mb-2 font-semibold">已完成</div>
+                <div class="text-4xl font-black text-purple-800">{taskStats.value.completed}</div>
+                <div class="text-sm text-purple-500 mt-2">🎉 完成任务</div>
               </div>
               <div class="stat-item">
-                <div class="text-lg text-gray-600 mb-2">平均耗时</div>
-                <div class="text-3xl font-bold text-warning">{taskStats.value.avgDuration}</div>
-                <div class="text-sm text-gray-500 mt-2">执行时长</div>
+                <div class="text-lg text-teal-600 mb-2 font-semibold">成功率</div>
+                <div class="text-4xl font-black text-teal-800">{taskStats.value.successRate}%</div>
+                <div class="text-sm text-teal-500 mt-2">📈 任务成功率</div>
+              </div>
+            </div>
+          </Card>
+
+          <Card
+            hoverable
+            class="stat-card stat-card-warning rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-r from-orange-50 to-orange-100"
+          >
+            <div class="grid grid-cols-2 gap-4 relative">
+              <div class="absolute right-2 top-0 text-4xl opacity-50">⚠️</div>
+              <div class="stat-item">
+                <div class="text-lg text-red-600 mb-2 font-semibold">失败数</div>
+                <div class="text-4xl font-black text-red-800">{taskStats.value.failed}</div>
+                <div class="text-sm text-red-500 mt-2">💥 异常任务</div>
+              </div>
+              <div class="stat-item">
+                <div class="text-lg text-amber-600 mb-2 font-semibold">平均耗时</div>
+                <div class="text-4xl font-black text-amber-800">{taskStats.value.avgDuration}</div>
+                <div class="text-sm text-amber-500 mt-2">⏱️ 执行时长</div>
               </div>
             </div>
           </Card>
         </div>
 
         {/* 批量操作按钮 */}
-        <div class="mb-4">
-          <Space>
-            <Button
-              type="primary"
-              onClick={() => batchOperation('start')}
-              disabled={!selectedTaskKeys.value.length}
-              loading={state.value.loading}
-            >
-              批量启动
-            </Button>
-            <Button
-              onClick={() => batchOperation('pause')}
-              disabled={!selectedTaskKeys.value.length}
-              loading={state.value.loading}
-            >
-              批量暂停
-            </Button>
-            <Button
-              danger
-              onClick={() => batchOperation('stop')}
-              disabled={!selectedTaskKeys.value.length}
-              loading={state.value.loading}
-            >
-              批量停止
-            </Button>
-          </Space>
+        <div class="mb-4 space-x-4">
+          <Button
+            type="primary"
+            onClick={() => batchOperation('start')}
+            disabled={!selectedTaskKeys.value.length}
+            loading={state.value.loading}
+          >
+            批量启动
+          </Button>
+          <Button
+            onClick={() => batchOperation('pause')}
+            disabled={!selectedTaskKeys.value.length}
+            loading={state.value.loading}
+          >
+            批量暂停
+          </Button>
+          <Button
+            danger
+            onClick={() => batchOperation('stop')}
+            disabled={!selectedTaskKeys.value.length}
+            loading={state.value.loading}
+          >
+            批量停止
+          </Button>
         </div>
 
         {/* 任务列表 */}
@@ -579,23 +593,32 @@ export default defineComponent({
           rowSelection={{
             selectedRowKeys: selectedTaskKeys.value,
             onChange: (selectedRowKeys: Key[]) => {
+              console.log(selectedRowKeys)
+
               selectedTaskKeys.value = selectedRowKeys as string[]
             },
           }}
           loading={state.value.loading}
           columns={columns}
           dataSource={filteredTasks.value}
-          pagination={{
-            ...state.value.pagination,
-            onChange: (page: number, pageSize: number) => {
-              state.value.pagination.current = page
-              state.value.pagination.pageSize = pageSize
-            },
-          }}
+          pagination={false}
           bordered
           size="middle"
-          scroll={{ x: 1300 }}
+          scroll={{ x: 1000, y: 800, scrollToFirstRowOnChange: true }}
         />
+
+        <Pagination
+          current={state.value.pagination.current}
+          total={state.value.pagination.total}
+          pageSize={state.value.pagination.pageSize}
+          showLessItems
+          showTotal={(total) => `共 ${total} 条`}
+          class="py-4 rounded-b-md rounded-bl-md bg-white text-right"
+          onChange={(page: number, pageSize: number) => {
+            state.value.pagination.current = page
+            state.value.pagination.pageSize = pageSize
+          }}
+        ></Pagination>
 
         {/* 任务详情弹框 */}
         <Modal

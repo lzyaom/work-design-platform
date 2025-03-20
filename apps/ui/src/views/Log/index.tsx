@@ -1,5 +1,4 @@
 import { defineComponent, ref, computed, onMounted } from 'vue'
-import './index.css'
 import {
   Card,
   Button,
@@ -12,11 +11,11 @@ import {
   Drawer,
   Descriptions,
   message,
+  Pagination,
+  Spin,
 } from 'ant-design-vue'
 import {
-  SearchOutlined,
   ReloadOutlined,
-  CalendarOutlined,
   DownloadOutlined,
   DeleteOutlined,
   FileTextOutlined,
@@ -57,7 +56,7 @@ interface LogItem {
 }
 
 export default defineComponent({
-  name: 'Logs',
+  name: 'LogsManagement',
   setup() {
     // 状态管理
     const loading = ref(false)
@@ -143,6 +142,7 @@ export default defineComponent({
         dataIndex: 'timestamp',
         width: 180,
         sorter: (a: LogItem, b: LogItem) => dayjs(a.timestamp).unix() - dayjs(b.timestamp).unix(),
+        showSorterTooltip: false,
         customRender: ({ text }) => (
           <span title={text as string}>{dayjs(text as string).fromNow()}</span>
         ),
@@ -192,6 +192,7 @@ export default defineComponent({
         dataIndex: 'duration',
         width: 100,
         sorter: (a: LogItem, b: LogItem) => (a.duration || 0) - (b.duration || 0),
+        showSorterTooltip: false,
         customRender: ({ text }) => (
           <Tag color={text > 1000 ? 'red' : text > 500 ? 'orange' : 'green'}>
             {text ? `${text}ms` : '-'}
@@ -342,14 +343,58 @@ export default defineComponent({
       return (
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
           {cards.map((card) => (
-            <Card hoverable class={`stat-card stat-card-${card.type}`}>
-              <div class="flex items-center justify-between h-full">
+            <Card
+              hoverable
+              class={`stat-card stat-card-${card.type} rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-r ${
+                card.type === 'info'
+                  ? 'from-blue-50 to-blue-100'
+                  : card.type === 'success'
+                    ? 'from-green-50 to-green-100'
+                    : card.type === 'warning'
+                      ? 'from-orange-50 to-orange-100'
+                      : 'from-red-50 to-red-100'
+              }`}
+            >
+              <div class="flex items-center justify-between h-full relative">
                 <div class="flex flex-col justify-center">
-                  <div class="text-lg text-gray-600 mb-2">{card.title}</div>
-                  <div class={`text-3xl font-bold text-${card.type} mb-2`}>{card.value}</div>
+                  <div class="text-lg text-gray-600 mb-2 font-semibold">{card.title}</div>
+                  <div
+                    class={`text-4xl font-black ${
+                      card.type === 'info'
+                        ? 'text-blue-600'
+                        : card.type === 'success'
+                          ? 'text-green-600'
+                          : card.type === 'warning'
+                            ? 'text-yellow-600'
+                            : 'text-red-600'
+                    } mb-2`}
+                  >
+                    {card.value}
+                  </div>
                   <div class="text-sm text-gray-500">{card.subTitle}</div>
                 </div>
-                <div class={`text-4xl text-${card.type}-300 flex items-center`}>{card.icon}</div>
+                <div
+                  class={`text-4xl ${
+                    card.type === 'info'
+                      ? 'text-blue-300'
+                      : card.type === 'success'
+                        ? 'text-green-300'
+                        : card.type === 'warning'
+                          ? 'text-orange-300'
+                          : 'text-red-300'
+                  }`}
+                >
+                  {card.icon}
+                </div>
+                <div class="absolute right-4 top-4 text-3xl opacity-50">
+                  {card.type === 'info'
+                    ? '📰'
+                    : card.type === 'success'
+                      ? '✅'
+                      : card.type === 'warning'
+                        ? '⚠️'
+                        : '❌'}
+                </div>
               </div>
             </Card>
           ))}
@@ -359,31 +404,22 @@ export default defineComponent({
 
     // 渲染操作栏
     const renderToolbar = () => (
-      <div class="bg-white p-4 mb-6 rounded-lg shadow-sm">
+      <div class="bg-white p-4 mb-2 rounded-md shadow-sm">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div class="flex flex-wrap items-center gap-4">
             <DatePicker.RangePicker
               v-model:value={dateRange.value}
-              class="w-[250px]"
               allowClear
-              showTime
               disabledDate={(current: dayjs.Dayjs) => current && current > dayjs().endOf('day')}
-            >
-              {{
-                prefix: () => <CalendarOutlined />,
-              }}
-            </DatePicker.RangePicker>
+            ></DatePicker.RangePicker>
             <Input.Search
               v-model:value={searchText.value}
               placeholder="搜索日志内容"
               class="w-[250px]"
               allowClear
+              enterButton={true}
               onSearch={refreshLogs}
-            >
-              {{
-                prefix: () => <SearchOutlined />,
-              }}
-            </Input.Search>
+            ></Input.Search>
             <Select
               v-model:value={selectedLevel.value}
               mode="multiple"
@@ -399,17 +435,23 @@ export default defineComponent({
             </Select>
           </div>
           <div class="flex flex-wrap items-center gap-4">
-            <Button type="primary" onClick={refreshLogs} loading={loading.value}>
-              <ReloadOutlined />
-              刷新
+            <Button type="primary" loading={loading.value} onClick={refreshLogs}>
+              {{
+                icon: () => <ReloadOutlined class="align-middle" />,
+                default: () => (loading.value ? '刷新中...' : '刷新'),
+              }}
             </Button>
-            <Button onClick={exportLogs} disabled={!filteredLogs.value.length}>
-              <DownloadOutlined />
-              导出
+            <Button disabled={!filteredLogs.value.length} onClick={exportLogs}>
+              {{
+                icon: () => <DownloadOutlined class="align-middle" />,
+                default: () => '导出',
+              }}
             </Button>
-            <Button danger onClick={clearLogs} disabled={!selectedRowKeys.value.length}>
-              <DeleteOutlined />
-              清空
+            <Button danger disabled={!selectedRowKeys.value.length} onClick={clearLogs}>
+              {{
+                icon: () => <DeleteOutlined class="align-middle" />,
+                default: () => '清空',
+              }}
             </Button>
           </div>
         </div>
@@ -467,28 +509,36 @@ export default defineComponent({
         {renderToolbar()}
 
         <div class="shadow-sm">
-          <Table
-            rowSelection={{
-              selectedRowKeys: selectedRowKeys.value,
-              onChange: (selectedKeys: Key[]) => {
-                selectedRowKeys.value = selectedKeys as string[]
-              },
-            }}
-            columns={columns}
-            dataSource={filteredLogs.value}
-            loading={loading.value}
-            rowKey="id"
-            pagination={{
-              ...pagination.value,
-              total: filteredLogs.value.length,
-              showSizeChanger: true,
-              showQuickJumper: true,
-              showTotal: (total: number) => `共 ${total} 条`,
-            }}
-            bordered
-            size="middle"
-            scroll={{ x: 1200 }}
-          />
+          <Spin spinning={loading.value} tip="加载中...">
+            <Table
+              rowSelection={{
+                selectedRowKeys: selectedRowKeys.value,
+                onChange: (selectedKeys: Key[]) => {
+                  selectedRowKeys.value = selectedKeys as string[]
+                },
+              }}
+              columns={columns}
+              dataSource={filteredLogs.value}
+              loading={false}
+              rowKey="id"
+              pagination={false}
+              bordered
+              size="middle"
+              scroll={{ x: 1200 }}
+            />
+            <Pagination
+              current={pagination.value.current}
+              total={pagination.value.total}
+              pageSize={pagination.value.pageSize}
+              showLessItems
+              showTotal={(total) => `共 ${total} 条`}
+              class="py-4 rounded-b-md rounded-bl-md bg-white text-right"
+              onChange={(page: number, pageSize: number) => {
+                pagination.value.current = page
+                pagination.value.pageSize = pageSize
+              }}
+            ></Pagination>
+          </Spin>
         </div>
 
         <Drawer

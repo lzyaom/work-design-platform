@@ -106,7 +106,7 @@ export default [
       {
         path: '',
         name: 'Program',
-        component: () => import(/* webpackChunkName: "program" */ '../views/Program/index.vue'),
+        component: () => import(/* webpackChunkName: "program" */ '../views/Program/index.tsx'),
         meta: {
           title: '编程',
           showSidebar: true,

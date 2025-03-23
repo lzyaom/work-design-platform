@@ -195,5 +195,23 @@ export default [
       },
     ],
   },
+  {
+    path: '/settings',
+    component: () => import('@/layout/AppLayout'),
+    meta: {
+      requiresAuth: true,
+    },
+    children: [
+      {
+        path: '',
+        name: 'Settings',
+        component: () => import('@/views/Settings/index.tsx'),
+        meta: {
+          title: '设置',
+          showSidebar: true,
+        },
+      },
+    ],
+  },
   { path: '/:pathMatch(.*)*', name: 'NotFound', redirect: '/login' },
 ] as RouteRecordRaw[]

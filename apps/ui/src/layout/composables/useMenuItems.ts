@@ -8,6 +8,7 @@ import {
   MonitorOutlined,
   FileTextOutlined,
   UserOutlined,
+  SettingOutlined,
 } from '@ant-design/icons-vue'
 
 // 图标映射
@@ -19,6 +20,7 @@ const iconMap: Record<string, Component> = {
   monitor: MonitorOutlined,
   logs: FileTextOutlined,
   users: UserOutlined,
+  settings: SettingOutlined,
 }
 
 interface MenuItem {

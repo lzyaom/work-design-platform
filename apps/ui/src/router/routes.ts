@@ -66,6 +66,34 @@ export default [
     ],
   },
   {
+    path: '/program',
+    meta: {
+      requiresAuth: true,
+      hideInMenu: true,
+    },
+    component: () => import('@/layout/AppLayout'),
+    children: [
+      {
+        path: '',
+        name: 'Program',
+        component: () => import(/* webpackChunkName: "program" */ '../views/Program/index.tsx'),
+        meta: {
+          title: '编程',
+          showSidebar: true,
+        },
+      },
+      {
+        path: 'editor',
+        name: 'ProgramEditor',
+        component: () => import('../views/Program/editor/index.vue'),
+        meta: {
+          title: '编程空间',
+          hideInMenu: true,
+        },
+      },
+    ],
+  },
+  {
     path: '/design',
     meta: {
       requiresAuth: true,
@@ -96,29 +124,19 @@ export default [
     ],
   },
   {
-    path: '/program',
+    path: '/users',
+    component: () => import('@/layout/AppLayout'),
     meta: {
       requiresAuth: true,
-      hideInMenu: true,
     },
-    component: () => import('@/layout/AppLayout'),
     children: [
       {
         path: '',
-        name: 'Program',
-        component: () => import(/* webpackChunkName: "program" */ '../views/Program/index.tsx'),
+        name: 'Users',
+        component: () => import('@/views/User/index.tsx'),
         meta: {
-          title: '编程',
+          title: '用户管理',
           showSidebar: true,
-        },
-      },
-      {
-        path: 'editor',
-        name: 'ProgramEditor',
-        component: () => import('../views/Program/editor/index.vue'),
-        meta: {
-          title: '编程空间',
-          hideInMenu: true,
         },
       },
     ],

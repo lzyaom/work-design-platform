@@ -1,4 +1,4 @@
-import { defineComponent, onMounted, watch, ref, reactive, computed } from 'vue'
+import { defineComponent, onMounted, watch, ref, reactive } from 'vue'
 import {
   Table,
   Space,
@@ -153,14 +153,6 @@ export default defineComponent({
       },
     ] as TableColumnsType
 
-    // 行选择配置
-    const rowSelection = computed(() => ({
-      selectedRowKeys: selectedRowKeys.value,
-      onChange: (keys: Key[], selectedRows: ProgramFile[]) => {
-        selectedRowKeys.value = keys
-      },
-    }))
-
     const handleTableChange: TableProps['onChange'] = (pagination, _filters, sorter) => {
       queryParams.page = pagination.current as number
       queryParams.pageSize = pagination.pageSize as number
@@ -247,7 +239,7 @@ export default defineComponent({
     }
 
     // 编译处理
-    const handleCompile = async (record: ProgramFile) => {
+    const handleCompile = async (_record: ProgramFile) => {
       try {
         // TODO: 替换为实际的API调用
         // await api.program.compile(record.id)
@@ -266,7 +258,7 @@ export default defineComponent({
     }
 
     // 删除处理
-    const handleDelete = async (record: ProgramFile) => {
+    const handleDelete = async (_record: ProgramFile) => {
       try {
         // TODO: 替换为实际的API调用
         // await api.program.delete(record.id)
@@ -352,7 +344,7 @@ export default defineComponent({
                     <Button type="primary" danger>
                       {{
                         icon: () => <DeleteOutlined class="align-middle" />,
-                        default: '批量删除',
+                        default: () => '批量删除',
                       }}
                     </Button>
                   </Popconfirm>
@@ -361,7 +353,7 @@ export default defineComponent({
                   <Button type="primary" onClick={handleExport}>
                     {{
                       icon: () => <DownloadOutlined class="align-middle" />,
-                      default: '导出',
+                      default: () => '导出',
                     }}
                   </Button>
                 )}
@@ -377,7 +369,12 @@ export default defineComponent({
               columns={columns}
               loading={false}
               rowKey="id"
-              rowSelection={rowSelection.value}
+              rowSelection={{
+                selectedRowKeys: selectedRowKeys.value,
+                onChange: (keys: Key[]) => {
+                  selectedRowKeys.value = keys as Key[]
+                },
+              }}
               pagination={false as const}
               bordered
               scroll={{ x: 1200 }}

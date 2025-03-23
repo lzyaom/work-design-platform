@@ -63,3 +63,9 @@ export interface Column {
     customRender?: string
   }
 }
+
+export interface RegisterUser {
+  password: string
+  email: string
+  verificationCode: string
+}

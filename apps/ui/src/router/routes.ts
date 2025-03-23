@@ -29,7 +29,7 @@ export default [
   {
     path: '/register',
     name: 'Register',
-    component: () => import(/* webpackChunkName: "register" */ '../views/Register.vue'),
+    component: () => import(/* webpackChunkName: "register" */ '../views/Register/index.tsx'),
     meta: {
       requiresAuth: false,
       title: '注册',

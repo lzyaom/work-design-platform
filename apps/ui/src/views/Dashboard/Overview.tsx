@@ -713,7 +713,7 @@ export default defineComponent({
     )
 
     return () => (
-      <div class="dashboard-container">
+      <div class="dashboard-container min-h-screen p-6">
         {renderStatCards()}
         <div class="my-6" />
         {renderToolbar()}

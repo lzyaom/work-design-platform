@@ -436,22 +436,15 @@ export default defineComponent({
           </div>
           <div class="flex flex-wrap items-center gap-4">
             <Button type="primary" loading={loading.value} onClick={refreshLogs}>
-              {{
-                icon: () => <ReloadOutlined class="align-middle" />,
-                default: () => (loading.value ? '刷新中...' : '刷新'),
-              }}
+              {loading.value ? '刷新中...' : '刷新'}
             </Button>
             <Button disabled={!filteredLogs.value.length} onClick={exportLogs}>
-              {{
-                icon: () => <DownloadOutlined class="align-middle" />,
-                default: () => '导出',
-              }}
+              <DownloadOutlined />
+              导出
             </Button>
             <Button danger disabled={!selectedRowKeys.value.length} onClick={clearLogs}>
-              {{
-                icon: () => <DeleteOutlined class="align-middle" />,
-                default: () => '清空',
-              }}
+              <DeleteOutlined />
+              清空
             </Button>
           </div>
         </div>

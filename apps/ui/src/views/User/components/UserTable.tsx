@@ -108,10 +108,8 @@ export const UserTable = defineComponent({
           return (
             <Space>
               <Button type="link" onClick={() => emit('edit', user)} size="small">
-                {{
-                  icon: () => <EditOutlined class="align-middle" />,
-                  default: () => '编辑',
-                }}
+                <EditOutlined />
+                编辑
               </Button>
               <Popconfirm
                 title="提示"
@@ -124,15 +122,17 @@ export const UserTable = defineComponent({
                 }
               >
                 <Button type="link" size="small">
-                  {{
-                    icon: () =>
-                      user.status === 'enabled' ? (
-                        <CheckCircleOutlined class="align-middle" />
-                      ) : (
-                        <StopOutlined class="align-middle" />
-                      ),
-                    default: () => (user.status === 'enabled' ? '禁用' : '启用'),
-                  }}
+                  {user.status === 'enabled' ? (
+                    <>
+                      <CheckCircleOutlined />
+                      '禁用'
+                    </>
+                  ) : (
+                    <>
+                      <StopOutlined />
+                      '启用'
+                    </>
+                  )}
                 </Button>
               </Popconfirm>
               <Popconfirm
@@ -144,10 +144,8 @@ export const UserTable = defineComponent({
                 onConfirm={() => emit('delete', user.id)}
               >
                 <Button type="link" danger size="small">
-                  {{
-                    icon: () => <DeleteOutlined class="align-middle" />,
-                    default: () => '删除',
-                  }}
+                  <DeleteOutlined />
+                  删除
                 </Button>
               </Popconfirm>
             </Space>

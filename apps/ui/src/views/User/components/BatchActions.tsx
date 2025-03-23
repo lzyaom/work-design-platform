@@ -28,18 +28,13 @@ export const BatchActions = defineComponent({
           onConfirm={() => emit('batch-delete')}
         >
           <Button type="primary" danger disabled={!props.hasSelected}>
-            {{
-              icon: () => <DeleteOutlined class="align-middle" />,
-              default: () => '批量删除',
-            }}
+            <DeleteOutlined class="align-middle" /> 批量删除
           </Button>
         </Popconfirm>
 
         <Button type="primary" onClick={() => emit('batch-export')} disabled={!props.hasSelected}>
-          {{
-            icon: () => <DownloadOutlined class="align-middle" />,
-            default: () => '批量导出',
-          }}
+          <DownloadOutlined />
+          批量导出
         </Button>
 
         {props.hasSelected && (

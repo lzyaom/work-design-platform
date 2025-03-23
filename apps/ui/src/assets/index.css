@@ -109,3 +109,8 @@ body::before {
     transform: translateX(0);
   }
 }
+
+.anticon {
+  vertical-align: text-top;
+  line-height: 1;
+}

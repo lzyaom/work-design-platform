@@ -35,7 +35,7 @@ interface NetworkConnection {
 }
 
 export default defineComponent({
-  name: 'Monitor',
+  name: 'MonitorManagement',
   setup() {
     // 模拟数据
     const cpuUsage = ref(0)
@@ -249,10 +249,8 @@ export default defineComponent({
             </div>
             {onDetail && (
               <Button type="link" class="flex items-center p-0" onClick={onDetail}>
-                {{
-                  icon: () => <EyeOutlined />,
-                  default: () => <span class="ml-1">详情</span>,
-                }}
+                <EyeOutlined />
+                <span class="ml-1">详情</span>
               </Button>
             )}
           </div>
@@ -272,10 +270,8 @@ export default defineComponent({
             loading={loading.value}
             onClick={handleRefresh}
           >
-            {{
-              icon: () => <ReloadOutlined class="align-middle" />,
-              default: () => <span class="ml-1">刷新</span>,
-            }}
+            <ReloadOutlined />
+            <span class="ml-1">刷新</span>
           </Button>
         </div>
 

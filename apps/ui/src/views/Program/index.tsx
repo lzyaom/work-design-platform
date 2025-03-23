@@ -343,19 +343,15 @@ export default defineComponent({
                     onConfirm={handleBatchDelete}
                   >
                     <Button type="primary" danger>
-                      {{
-                        icon: () => <DeleteOutlined class="align-middle" />,
-                        default: () => '批量删除',
-                      }}
+                      <DeleteOutlined />
+                      批量删除
                     </Button>
                   </Popconfirm>
                 )}
                 {permissions.export && selectedRowKeys.value.length > 0 && (
                   <Button type="primary" onClick={handleExport}>
-                    {{
-                      icon: () => <DownloadOutlined class="align-middle" />,
-                      default: () => '导出',
-                    }}
+                    <DownloadOutlined />
+                    导出
                   </Button>
                 )}
               </Space>

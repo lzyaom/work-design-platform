@@ -17,6 +17,7 @@ import type { FormInstance, TableColumnsType, TableProps } from 'ant-design-vue'
 import { DeleteOutlined, DownloadOutlined } from '@ant-design/icons-vue'
 import dayjs, { Dayjs } from 'dayjs'
 import type { Key } from 'ant-design-vue/es/table/interface'
+import type { ProgramFile, QueryParams, ActionPermission } from '@/types/program'
 import type { ProgramFile, QueryParams, ActionPermission } from './types'
 export default defineComponent({
   name: 'ProgramManage',

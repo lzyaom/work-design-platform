@@ -18,10 +18,11 @@ import { DeleteOutlined, DownloadOutlined } from '@ant-design/icons-vue'
 import dayjs, { Dayjs } from 'dayjs'
 import type { Key } from 'ant-design-vue/es/table/interface'
 import type { ProgramFile, QueryParams, ActionPermission } from '@/types/program'
-import type { ProgramFile, QueryParams, ActionPermission } from './types'
+import { useRouter } from 'vue-router'
 export default defineComponent({
   name: 'ProgramManage',
   setup() {
+    const router = useRouter()
     // 加载状态
     const loading = ref(false)
 
@@ -133,9 +134,13 @@ export default defineComponent({
         customRender: ({ record }) => (
           <Space>
             {permissions.edit && (
-              <Button type="link" size="small" onClick={() => handleEdit(record)}>
+              <a
+                href={router.resolve({ name: 'ProgramEditor', params: { id: record.id } }).href}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 编辑
-              </Button>
+              </a>
             )}
             {permissions.compile && record.status !== 'compiling' && (
               <Button type="link" size="small" onClick={() => handleCompile(record)}>
@@ -143,7 +148,13 @@ export default defineComponent({
               </Button>
             )}
             {permissions.delete && (
-              <Popconfirm title="确定要删除这个文件吗?" onConfirm={() => handleDelete(record)}>
+              <Popconfirm
+                title="提示"
+                description="确定要删除这个文件吗?"
+                okText="确定"
+                cancelText="取消"
+                onConfirm={() => handleDelete(record)}
+              >
                 <Button type="link" size="small" danger>
                   删除
                 </Button>
@@ -252,12 +263,6 @@ export default defineComponent({
       }
     }
 
-    // 编辑处理
-    const handleEdit = (record: ProgramFile) => {
-      // TODO: 实现编辑逻辑，可能需要导航到编辑页面
-      console.log('Edit record:', record)
-    }
-
     // 删除处理
     const handleDelete = async (_record: ProgramFile) => {
       try {
@@ -319,6 +324,7 @@ export default defineComponent({
                 v-model:value={queryParams.dateRange as unknown as [Dayjs, Dayjs]}
                 disabledDate={(current: dayjs.Dayjs) => current && current > dayjs().endOf('day')}
                 format="YYYY-MM-DD"
+                placeholder={['开始日期', '结束日期']}
               />
             </Form.Item>
 

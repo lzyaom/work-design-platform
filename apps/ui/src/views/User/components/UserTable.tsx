@@ -125,12 +125,12 @@ export const UserTable = defineComponent({
                   {user.status === 'enabled' ? (
                     <>
                       <CheckCircleOutlined />
-                      '禁用'
+                      禁用
                     </>
                   ) : (
                     <>
                       <StopOutlined />
-                      '启用'
+                      启用
                     </>
                   )}
                 </Button>

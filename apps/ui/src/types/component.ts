@@ -23,6 +23,7 @@ export interface BaseComponent {
   id: string
   type: string
   title: string
+  icon: string
   props: Record<string, unknown>
   style: CSSProperties
   events?: BaseEvent[]

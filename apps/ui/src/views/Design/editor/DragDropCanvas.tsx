@@ -10,6 +10,7 @@ import {
 import { Button, message, Switch } from 'ant-design-vue'
 import './DragDropCanvas.css'
 import ComponentRenderer from './core/componentRenderer'
+import { componentSchemas } from './core/componentSchemas'
 
 interface AlignmentLine {
   direction: 'horizontal' | 'vertical'
@@ -346,8 +347,8 @@ export default defineComponent({
         y: e.clientY,
       }
       resizeStartSize.value = {
-        width: parseInt((component.style.width as string) || '100'),
-        height: parseInt((component.style.height as string) || '100'),
+        width: parseInt(component.style.width as string),
+        height: parseInt(component.style.height as string),
       }
 
       document.addEventListener('mousemove', handleResizeMove)
@@ -529,18 +530,59 @@ export default defineComponent({
         const x = Math.round(e.clientX - rect.left)
         const y = Math.round(e.clientY - rect.top)
 
-        // 创建新组件
+        // 获取组件的默认配置
+        const schema = componentSchemas[component.type as keyof typeof componentSchemas]
+        if (!schema) {
+          throw new Error(`未找到组件 ${component.type} 的配置`)
+        }
+
+        // 创建新组件，合并默认配置
         const newComponent: Component = {
-          ...component,
           id: `${component.type}_${Date.now()}`,
+          type: component.type,
+          title: component.title || schema.title,
+          icon: component.icon || '', // 添加必需的 icon 属性
+          props: {
+            // 从 schema 中获取默认属性值
+            ...Object.entries(schema.properties.props?.properties || {}).reduce(
+              (acc, [key, propSchema]) => {
+                const value = propSchema as { default?: unknown }
+                if ('default' in value) {
+                  acc[key] = value.default
+                }
+                return acc
+              },
+              {} as Record<string, unknown>,
+            ),
+            // 合并组件自带的属性
+            ...component.props,
+          },
           style: {
             position: 'absolute',
             left: `${snapToGrid(x)}px`,
             top: `${snapToGrid(y)}px`,
             width: '100px', // 默认尺寸
             height: '100px', // 默认尺寸
+            // 从 schema 中获取默认样式值
+            ...Object.entries(schema.properties.style?.properties || {}).reduce(
+              (acc, [key, styleSchema]) => {
+                const value = styleSchema as { default?: unknown }
+                if ('default' in value) {
+                  acc[key] = value.default
+                }
+                return acc
+              },
+              {} as Record<string, unknown>,
+            ),
+            // 合并组件自带的样式
             ...component.style,
           },
+          // 添加默认事件配置
+          events: component.events || [],
+          // 添加默认动画配置
+          animations: component.animations || [],
+          // 添加默认数据绑定配置
+          dataBindings: component.dataBindings || [],
         }
 
         // 添加到设计器中
@@ -554,17 +596,24 @@ export default defineComponent({
     }
 
     const handleCanvasClick = (e: MouseEvent) => {
-      if (e.target === canvasRef.value) {
+      if (e.target === canvasRef.value && designStore.selectedId) {
         designStore.selectComponent(null)
       }
     }
     const handleContextOutside = (e: MouseEvent) => {
+      if (designStore.selectedId) {
+        // 如果组件被选中，则不取消选中
+        return
+      }
       if (e.target !== canvasRef.value) {
         designStore.selectComponent(null)
       }
     }
     const handleComponentClick = (e: MouseEvent, component: Component) => {
       e.stopPropagation()
+      if (designStore.selectedId === component.id) {
+        return
+      }
       designStore.selectComponent(component.id)
     }
 
@@ -599,9 +648,7 @@ export default defineComponent({
         {designStore.components.map((component) => (
           <div
             key={component.id}
-            class={`component-wrapper ${designStore.selectedId === component.id ? 'selected' : ''} 
-                   ${isResizing.value ? 'resizing' : ''} 
-                   ${isRotating.value ? 'rotating' : ''}`}
+            class={`component-wrapper ${designStore.selectedId === component.id ? 'selected' : ''} ${isResizing.value ? 'resizing' : ''} ${isRotating.value ? 'rotating' : ''}`}
             draggable={!isResizing.value && !isRotating.value}
             onDragstart={(e: DragEvent) => handleDragStart(e, component)}
             onDrag={handleDrag}
@@ -614,10 +661,10 @@ export default defineComponent({
             }}
           >
             {/* 组件内容 */}
-            <ComponentRenderer component={component} />
+            <ComponentRenderer component={component} class="component-content" />
 
             {/* 工具栏 */}
-            {designStore.selectedId === component.id && (
+            {/* {designStore.selectedId === component.id && (
               <div class="component-toolbar">
                 <Button
                   type="text"
@@ -636,13 +683,13 @@ export default defineComponent({
                   <ArrowDownOutlined />
                 </Button>
               </div>
-            )}
+            )} */}
 
             {/* 缩放控制点 */}
             {renderResizeHandles(component)}
 
             {/* 旋转控制点 */}
-            {renderRotateHandle(component)}
+            {/* {renderRotateHandle(component)} */}
           </div>
         ))}
         {renderAlignmentLines()}

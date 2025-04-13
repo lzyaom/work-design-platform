@@ -6,13 +6,15 @@ import {
   ExportOutlined,
   EyeOutlined,
   TeamOutlined,
+  ShareAltOutlined,
+  ArrowLeftOutlined,
 } from '@ant-design/icons-vue'
 import { Button, Avatar, Tooltip, message } from 'ant-design-vue'
-import ComponentPalette from './ComponentPalette.tsx'
+import ComponentBlock from './ComponentBlock.tsx'
 import DragDropCanvas from './DragDropCanvas.tsx'
 import PropertyPanel from './PropertyPanel.tsx'
 import { useDesignStore } from '@/stores/design.ts'
-import './index.css'
+import { RouterLink } from 'vue-router'
 
 export default defineComponent({
   name: 'DesignEditor',
@@ -81,77 +83,78 @@ export default defineComponent({
     })
 
     return () => (
-      <div class="design-editor">
-        <header class="editor-header glass-header">
-          <div class="flex items-center justify-between px-4 w-full">
-            <div class="flex items-center">
-              <h1 class="text-lg font-medium mr-8">设计项目名称</h1>
-              <div class="flex gap-2">
-                <Tooltip title="撤销">
-                  <Button
-                    type="text"
-                    class="glass-button"
-                    disabled={!canUndo.value}
-                    onClick={handleUndo}
-                  >
-                    <UndoOutlined />
-                  </Button>
-                </Tooltip>
-                <Tooltip title="重做">
-                  <Button
-                    type="text"
-                    class="glass-button"
-                    disabled={!canRedo.value}
-                    onClick={handleRedo}
-                  >
-                    <RedoOutlined />
-                  </Button>
-                </Tooltip>
-                <Tooltip title="保存">
-                  <Button type="text" class="glass-button" onClick={handleSave}>
-                    <SaveOutlined />
-                  </Button>
-                </Tooltip>
-                <Tooltip title="导出">
-                  <Button type="text" class="glass-button" onClick={handleExport}>
-                    <ExportOutlined />
-                  </Button>
-                </Tooltip>
-                <Tooltip title="预览">
-                  <Button type="text" class="glass-button" onClick={handlePreview}>
-                    <EyeOutlined />
-                  </Button>
-                </Tooltip>
-              </div>
+      <div class="design-editor flex flex-col h-screen">
+        <header class="editor-header flex justify-between items-center h-16 px-4 bg-indigo-200 backdrop-blur-md shadow-sm">
+          <div class="flex items-center">
+            <RouterLink to={{ name: 'Design' }} class="flex items-center">
+              <ArrowLeftOutlined class="mr-2" />
+              返回
+            </RouterLink>
+            <h1 class="text-lg font-medium mx-8">设计项目名称</h1>
+            <div class="flex gap-2">
+              <Tooltip title="撤销">
+                <Button
+                  type="text"
+                  class="glass-button"
+                  disabled={!canUndo.value}
+                  onClick={handleUndo}
+                >
+                  <UndoOutlined />
+                </Button>
+              </Tooltip>
+              <Tooltip title="重做">
+                <Button
+                  type="text"
+                  class="glass-button"
+                  disabled={!canRedo.value}
+                  onClick={handleRedo}
+                >
+                  <RedoOutlined />
+                </Button>
+              </Tooltip>
+              <Tooltip title="保存">
+                <Button type="text" class="glass-button" onClick={handleSave}>
+                  <SaveOutlined />
+                </Button>
+              </Tooltip>
+              <Tooltip title="导出">
+                <Button type="text" class="glass-button" onClick={handleExport}>
+                  <ExportOutlined />
+                </Button>
+              </Tooltip>
+              <Tooltip title="预览">
+                <Button type="text" class="glass-button" onClick={handlePreview}>
+                  <EyeOutlined />
+                </Button>
+              </Tooltip>
             </div>
-            <div class="flex items-center gap-4">
-              <div class="flex items-center">
-                <TeamOutlined class="mr-2" />
-                <Avatar.Group>
-                  {collaborators.value.map((user) => (
-                    <Tooltip key={user.id} title={`${user.name}${user.online ? ' (在线)' : ''}`}>
-                      <Avatar
-                        src={user.avatar}
-                        class={user.online ? 'ring-2 ring-green-400' : ''}
-                      />
-                    </Tooltip>
-                  ))}
-                </Avatar.Group>
-              </div>
-            </div>
+          </div>
+          <div class="flex items-center">
+            <TeamOutlined class="mr-2" />
+            <Avatar.Group>
+              {collaborators.value.map((user) => (
+                <Tooltip key={user.id} title={`${user.name}${user.online ? ' (在线)' : ''}`}>
+                  <Avatar src={user.avatar} class={user.online ? 'ring-2 ring-green-400' : ''} />
+                </Tooltip>
+              ))}
+            </Avatar.Group>
+            <Button type="text" class="ml-4">
+              <ShareAltOutlined class="mr-1" />
+              邀请
+            </Button>
           </div>
         </header>
-        <div class="editor-main flex">
-          <aside class="component-sider glass-sider w-[280px]">
-            <ComponentPalette />
+        <main class="editor-main flex flex-1 overflow-hidden">
+          <aside class="component-sider glass-sider w-[280px] border-r border-gray-200">
+            <ComponentBlock />
           </aside>
-          <div class="canvas-content flex-1">
+          <div class="canvas-content flex-1 overflow-auto">
             <DragDropCanvas />
           </div>
-          <aside class="property-sider glass-sider w-[300px]">
+          <aside class="property-sider w-[300px] border-l border-gray-200 bg-gray-100">
             <PropertyPanel />
           </aside>
-        </div>
+        </main>
       </div>
     )
   },

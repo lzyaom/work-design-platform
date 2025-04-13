@@ -1,15 +1,8 @@
 import { defineComponent, ref, computed, watch } from 'vue'
-import { Form, Input, InputNumber, Select, Tabs, Card, Switch } from 'ant-design-vue'
+import { Form, Input, InputNumber, Select, Tabs, Switch } from 'ant-design-vue'
 import type { SelectProps, InputNumberProps, CheckboxProps } from 'ant-design-vue'
 import type { CSSProperties } from 'vue'
-import {
-  FontSizeOutlined,
-  BgColorsOutlined,
-  BorderOutlined,
-  LayoutOutlined,
-} from '@ant-design/icons-vue'
 import { useDesignStore } from '@/stores/design'
-import './PropertyPanel.css'
 // import type { Component } from '@/types/component'
 import { componentSchemas } from './core/componentSchemas'
 import type { ComponentType } from './core/componentSchemas'
@@ -138,260 +131,210 @@ export default defineComponent({
     }
 
     return () => (
-      <div class="property-panel">
-        <Card class="property-card">
-          {!selectedComponent.value ? (
-            <div class="empty-tip">请选择一个组件进行配置</div>
-          ) : (
-            <Tabs v-model:activeKey={activeTab.value}>
-              {/* 组件属性配置 */}
-              <TabPane key="props" tab="组件属性">
-                <Form layout="vertical">
-                  {componentSchema.value?.properties.props?.properties &&
-                    Object.entries(componentSchema.value.properties.props.properties).map(
-                      ([key, prop]) => {
-                        const typedProp = prop as PropSchema
-                        return (
-                          <FormItem key={key} label={typedProp.title || key}>
-                            {typedProp.type === 'string' && typedProp.enum ? (
-                              <Select
-                                value={selectedComponent.value?.props?.[key] as string}
-                                onChange={(value) =>
-                                  handlePropChange(key, handleSelectChange(value))
-                                }
-                              >
-                                {typedProp.enum.map((option) => (
-                                  <Select.Option key={option} value={option}>
-                                    {option}
-                                  </Select.Option>
-                                ))}
-                              </Select>
-                            ) : typedProp.type === 'boolean' ? (
-                              <Switch
-                                checked={selectedComponent.value?.props?.[key] as boolean}
-                                onChange={(checked) =>
-                                  handlePropChange(key, handleSwitchChange(checked as boolean))
-                                }
-                              />
-                            ) : typedProp.type === 'number' ? (
-                              <InputNumber
-                                value={selectedComponent.value?.props?.[key] as number}
-                                onChange={(value) => {
-                                  const num = handleNumberChange(value)
-                                  if (num !== undefined) handlePropChange(key, num)
-                                }}
-                              />
-                            ) : (
-                              <Input
-                                value={selectedComponent.value?.props?.[key] as string}
-                                onChange={(e: Event) =>
-                                  handlePropChange(key, (e.target as HTMLInputElement).value)
-                                }
-                              />
-                            )}
-                          </FormItem>
-                        )
-                      },
-                    )}
-                </Form>
-              </TabPane>
+      <div class="property-panel h-full overflow-y-auto">
+        {selectedComponent.value && (
+          <Tabs v-model:activeKey={activeTab.value}>
+            {/* 组件属性配置 */}
+            <TabPane key="props" tab="组件属性">
+              <Form layout="horizontal">
+                {componentSchema.value?.properties.props?.properties &&
+                  Object.entries(componentSchema.value.properties.props.properties).map(
+                    ([key, prop]) => {
+                      const typedProp = prop as PropSchema
+                      return (
+                        <FormItem key={key} label={typedProp.title || key}>
+                          {typedProp.type === 'string' && typedProp.enum ? (
+                            <Select
+                              value={selectedComponent.value?.props?.[key] as string}
+                              onChange={(value) => handlePropChange(key, handleSelectChange(value))}
+                            >
+                              {typedProp.enum.map((option) => (
+                                <Select.Option key={option} value={option}>
+                                  {option}
+                                </Select.Option>
+                              ))}
+                            </Select>
+                          ) : typedProp.type === 'boolean' ? (
+                            <Switch
+                              checked={selectedComponent.value?.props?.[key] as boolean}
+                              onChange={(checked) =>
+                                handlePropChange(key, handleSwitchChange(checked as boolean))
+                              }
+                            />
+                          ) : typedProp.type === 'number' ? (
+                            <InputNumber
+                              value={selectedComponent.value?.props?.[key] as number}
+                              onChange={(value) => {
+                                const num = handleNumberChange(value)
+                                if (num !== undefined) handlePropChange(key, num)
+                              }}
+                            />
+                          ) : (
+                            <Input
+                              value={selectedComponent.value?.props?.[key] as string}
+                              onChange={(e: Event) =>
+                                handlePropChange(key, (e.target as HTMLInputElement).value)
+                              }
+                            />
+                          )}
+                        </FormItem>
+                      )
+                    },
+                  )}
+              </Form>
+            </TabPane>
 
-              {/* 样式配置 */}
-              <TabPane key="style" tab="样式配置">
-                <Form layout="vertical">
-                  {/* 字体样式配置 */}
-                  <Card
-                    size="small"
-                    title={
-                      <span>
-                        <FontSizeOutlined /> 字体样式
-                      </span>
-                    }
-                    class="mb-4"
+            {/* 样式配置 */}
+            <TabPane key="style" tab="样式配置">
+              <Form layout="horizontal">
+                {/* 字体样式配置 */}
+                <FormItem label="字体大小">
+                  <InputNumber
+                    value={parseInt(String(selectedComponent.value?.style?.fontSize))}
+                    addon-after="px"
+                    onChange={(value) => {
+                      const num = handleNumberChange(value)
+                      if (num !== undefined) handleStyleChange('fontSize', `${num}px`)
+                    }}
+                  />
+                </FormItem>
+                <FormItem label="字体粗细">
+                  <Select
+                    value={selectedComponent.value?.style?.fontWeight}
+                    onChange={(value) => handleStyleChange('fontWeight', handleSelectChange(value))}
                   >
-                    <FormItem label="字体大小">
-                      <InputNumber
-                        value={parseInt(String(styleConfig.value.fontSize))}
-                        addon-after="px"
-                        onChange={(value) => {
-                          const num = handleNumberChange(value)
-                          if (num !== undefined) handleStyleChange('fontSize', `${num}px`)
-                        }}
-                      />
-                    </FormItem>
-                    <FormItem label="字体粗细">
-                      <Select
-                        value={styleConfig.value.fontWeight}
-                        onChange={(value) =>
-                          handleStyleChange('fontWeight', handleSelectChange(value))
-                        }
-                      >
-                        <Select.Option value="normal">正常</Select.Option>
-                        <Select.Option value="bold">粗体</Select.Option>
-                        <Select.Option value="lighter">细体</Select.Option>
-                      </Select>
-                    </FormItem>
-                    <FormItem label="字体颜色">
-                      <Input
-                        type="color"
-                        value={styleConfig.value.color}
-                        onChange={(e: Event) =>
-                          handleStyleChange('color', (e.target as HTMLInputElement).value)
-                        }
-                      />
-                    </FormItem>
-                    <FormItem label="对齐方式">
-                      <Select
-                        value={styleConfig.value.textAlign}
-                        onChange={(value) =>
-                          handleStyleChange('textAlign', handleSelectChange(value))
-                        }
-                      >
-                        <Select.Option value="left">左对齐</Select.Option>
-                        <Select.Option value="center">居中</Select.Option>
-                        <Select.Option value="right">右对齐</Select.Option>
-                        <Select.Option value="justify">两端对齐</Select.Option>
-                      </Select>
-                    </FormItem>
-                  </Card>
+                    <Select.Option value="normal">正常</Select.Option>
+                    <Select.Option value="bold">粗体</Select.Option>
+                    <Select.Option value="lighter">细体</Select.Option>
+                  </Select>
+                </FormItem>
+                <FormItem label="字体颜色">
+                  <Input
+                    type="color"
+                    value={selectedComponent.value?.style?.color}
+                    onChange={(e: Event) =>
+                      handleStyleChange('color', (e.target as HTMLInputElement).value)
+                    }
+                  />
+                </FormItem>
+                <FormItem label="对齐方式">
+                  <Select
+                    value={selectedComponent.value?.style?.textAlign}
+                    onChange={(value) => handleStyleChange('textAlign', handleSelectChange(value))}
+                  >
+                    <Select.Option value="left">左对齐</Select.Option>
+                    <Select.Option value="center">居中</Select.Option>
+                    <Select.Option value="right">右对齐</Select.Option>
+                    <Select.Option value="justify">两端对齐</Select.Option>
+                  </Select>
+                </FormItem>
 
-                  {/* 背景样式配置 */}
-                  <Card
-                    size="small"
-                    title={
-                      <span>
-                        <BgColorsOutlined /> 背景样式
-                      </span>
+                {/* 背景样式配置 */}
+                <FormItem label="背景颜色">
+                  <Input
+                    type="color"
+                    value={selectedComponent.value?.style?.backgroundColor}
+                    onChange={(e: Event) =>
+                      handleStyleChange('backgroundColor', (e.target as HTMLInputElement).value)
                     }
-                    class="mb-4"
-                  >
-                    <FormItem label="背景颜色">
-                      <Input
-                        type="color"
-                        value={styleConfig.value.backgroundColor}
-                        onChange={(e: Event) =>
-                          handleStyleChange('backgroundColor', (e.target as HTMLInputElement).value)
-                        }
-                      />
-                    </FormItem>
-                  </Card>
+                  />
+                </FormItem>
 
-                  {/* 边框样式配置 */}
-                  <Card
-                    size="small"
-                    title={
-                      <span>
-                        <BorderOutlined /> 边框样式
-                      </span>
+                {/* 边框样式配置 */}
+                <FormItem label="边框宽度">
+                  <InputNumber
+                    value={parseInt(String(selectedComponent.value?.style?.borderWidth))}
+                    addon-after="px"
+                    onChange={(value) => {
+                      const num = handleNumberChange(value)
+                      if (num !== undefined) handleStyleChange('borderWidth', `${num}px`)
+                    }}
+                  />
+                </FormItem>
+                <FormItem label="边框样式">
+                  <Select
+                    value={selectedComponent.value?.style?.borderStyle}
+                    onChange={(value) =>
+                      handleStyleChange('borderStyle', handleSelectChange(value))
                     }
-                    class="mb-4"
                   >
-                    <FormItem label="边框宽度">
-                      <InputNumber
-                        value={parseInt(String(styleConfig.value.borderWidth))}
-                        addon-after="px"
-                        onChange={(value) => {
-                          const num = handleNumberChange(value)
-                          if (num !== undefined) handleStyleChange('borderWidth', `${num}px`)
-                        }}
-                      />
-                    </FormItem>
-                    <FormItem label="边框样式">
-                      <Select
-                        value={styleConfig.value.borderStyle}
-                        onChange={(value) =>
-                          handleStyleChange('borderStyle', handleSelectChange(value))
-                        }
-                      >
-                        <Select.Option value="none">无</Select.Option>
-                        <Select.Option value="solid">实线</Select.Option>
-                        <Select.Option value="dashed">虚线</Select.Option>
-                        <Select.Option value="dotted">点线</Select.Option>
-                      </Select>
-                    </FormItem>
-                    <FormItem label="边框颜色">
-                      <Input
-                        type="color"
-                        value={styleConfig.value.borderColor}
-                        onChange={(e: Event) =>
-                          handleStyleChange('borderColor', (e.target as HTMLInputElement).value)
-                        }
-                      />
-                    </FormItem>
-                    <FormItem label="圆角">
-                      <InputNumber
-                        value={parseInt(String(styleConfig.value.borderRadius))}
-                        addon-after="px"
-                        onChange={(value) => {
-                          const num = handleNumberChange(value)
-                          if (num !== undefined) handleStyleChange('borderRadius', `${num}px`)
-                        }}
-                      />
-                    </FormItem>
-                  </Card>
+                    <Select.Option value="none">无</Select.Option>
+                    <Select.Option value="solid">实线</Select.Option>
+                    <Select.Option value="dashed">虚线</Select.Option>
+                    <Select.Option value="dotted">点线</Select.Option>
+                  </Select>
+                </FormItem>
+                <FormItem label="边框颜色">
+                  <Input
+                    type="color"
+                    value={selectedComponent.value?.style?.borderColor}
+                    onChange={(e: Event) =>
+                      handleStyleChange('borderColor', (e.target as HTMLInputElement).value)
+                    }
+                  />
+                </FormItem>
+                <FormItem label="圆角">
+                  <InputNumber
+                    value={parseInt(String(selectedComponent.value?.style?.borderRadius))}
+                    addon-after="px"
+                    onChange={(value) => {
+                      const num = handleNumberChange(value)
+                      if (num !== undefined) handleStyleChange('borderRadius', `${num}px`)
+                    }}
+                  />
+                </FormItem>
 
-                  {/* 布局样式配置 */}
-                  <Card
-                    size="small"
-                    title={
-                      <span>
-                        <LayoutOutlined /> 布局样式
-                      </span>
+                {/* 布局样式配置 */}
+                <FormItem label="宽度">
+                  <InputNumber
+                    value={
+                      selectedComponent.value?.style?.width === 'auto'
+                        ? undefined
+                        : parseInt(String(selectedComponent.value?.style?.width))
                     }
-                    class="mb-4"
-                  >
-                    <FormItem label="宽度">
-                      <InputNumber
-                        value={
-                          styleConfig.value.width === 'auto'
-                            ? undefined
-                            : parseInt(String(styleConfig.value.width))
-                        }
-                        addon-after="px"
-                        onChange={(value) => {
-                          const num = handleNumberChange(value)
-                          handleStyleChange('width', num !== undefined ? `${num}px` : 'auto')
-                        }}
-                      />
-                    </FormItem>
-                    <FormItem label="高度">
-                      <InputNumber
-                        value={
-                          styleConfig.value.height === 'auto'
-                            ? undefined
-                            : parseInt(String(styleConfig.value.height))
-                        }
-                        addon-after="px"
-                        onChange={(value) => {
-                          const num = handleNumberChange(value)
-                          handleStyleChange('height', num !== undefined ? `${num}px` : 'auto')
-                        }}
-                      />
-                    </FormItem>
-                    <FormItem label="外边距">
-                      <Input
-                        value={styleConfig.value.margin}
-                        onChange={(e: Event) =>
-                          handleStyleChange('margin', (e.target as HTMLInputElement).value)
-                        }
-                        placeholder="例如: 10px 20px"
-                      />
-                    </FormItem>
-                    <FormItem label="内边距">
-                      <Input
-                        value={styleConfig.value.padding}
-                        onChange={(e: Event) =>
-                          handleStyleChange('padding', (e.target as HTMLInputElement).value)
-                        }
-                        placeholder="例如: 10px 20px"
-                      />
-                    </FormItem>
-                  </Card>
-                </Form>
-              </TabPane>
-            </Tabs>
-          )}
-        </Card>
+                    addon-after="px"
+                    onChange={(value) => {
+                      const num = handleNumberChange(value)
+                      handleStyleChange('width', num !== undefined ? `${num}px` : 'auto')
+                    }}
+                  />
+                </FormItem>
+                <FormItem label="高度">
+                  <InputNumber
+                    value={
+                      selectedComponent.value?.style?.height === 'auto'
+                        ? undefined
+                        : parseInt(String(selectedComponent.value?.style?.height))
+                    }
+                    addon-after="px"
+                    onChange={(value) => {
+                      const num = handleNumberChange(value)
+                      handleStyleChange('height', num !== undefined ? `${num}px` : 'auto')
+                    }}
+                  />
+                </FormItem>
+                <FormItem label="外边距">
+                  <Input
+                    value={selectedComponent.value?.style?.margin}
+                    onChange={(e: Event) =>
+                      handleStyleChange('margin', (e.target as HTMLInputElement).value)
+                    }
+                    placeholder="例如: 10px 20px"
+                  />
+                </FormItem>
+                <FormItem label="内边距">
+                  <Input
+                    value={selectedComponent.value?.style?.padding}
+                    onChange={(e: Event) =>
+                      handleStyleChange('padding', (e.target as HTMLInputElement).value)
+                    }
+                    placeholder="例如: 10px 20px"
+                  />
+                </FormItem>
+              </Form>
+            </TabPane>
+          </Tabs>
+        )}
       </div>
     )
   },

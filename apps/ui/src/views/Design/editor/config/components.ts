@@ -5,7 +5,7 @@ export const basicComponents: Component[] = [
     id: 'button',
     type: 'button',
     title: '按钮',
-    icon: 'icon-button',
+    icon: '',
     props: {
       text: '按钮',
       type: 'primary',

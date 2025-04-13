@@ -1,4 +1,61 @@
 import type { Component } from '@/types/component'
+import type { JSONSchema7 } from 'json-schema'
+
+export interface PageSchema {
+  version: string
+  components: ComponentSchema[]
+  dataSchema: JSONSchema7
+}
+export type SchemeType = 'object' | 'array' | 'string' | 'number' | 'boolean'
+export type PropSchema = {
+  type: SchemeType
+  title?: string
+  description?: string
+  enum?: string[]
+  minimum?: number
+  maximum?: number
+  format?: string
+  items?: PropSchema | PropSchema[]
+  properties?: Record<string, PropSchema>
+  required?: string[]
+}
+
+export type EventType =
+  | 'click'
+  | 'change'
+  | 'input'
+  | 'submit'
+  | 'reset'
+  | 'mouseover'
+  | 'mouseout'
+  | 'mousedown'
+  | 'mouseup'
+  | 'mousemove'
+  | 'keydown'
+  | 'keyup'
+  | 'keypress'
+  | 'focus'
+  | 'blur'
+  | 'select'
+  | 'dblclick'
+  | 'contextmenu'
+  | 'touchstart'
+  | 'touchend'
+  | 'touchmove'
+  | 'touchcancel'
+  | 'wheel'
+  | 'dragstart'
+  | 'drag'
+  | 'dragend'
+  | 'drop'
+  | 'dragenter'
+  | 'dragover'
+  | 'dragleave'
+  | 'paste'
+  | 'copy'
+  | 'cut'
+  | 'resize'
+  | 'scroll'
 
 export type ComponentType =
   | 'button'
@@ -22,29 +79,42 @@ export type ComponentType =
   | 'divider'
   | 'space'
 
-interface ComponentSchema {
+export interface ComponentSchema {
   type: ComponentType
   title: string
+  icon?: string
+  category?: string
+  layoutOptions?: {
+    resizable?: boolean
+    draggable?: boolean
+    minimumWidth?: number
+    minimumHeight?: number
+  }
   description?: string
   properties: {
-    props?: {
-      type: 'object'
-      properties: Record<string, unknown>
-    }
-    style?: {
-      type: 'object'
-      properties: Record<string, unknown>
-    }
+    props?: PropSchema
+    style?: PropSchema
     events?: {
       type: 'array'
       items: {
         type: 'object'
-        properties: Record<string, unknown>
+        properties: {
+          type: { type: 'string'; enum: EventType[] }
+          handler: { type: 'string' }
+          description: { type: 'string' }
+        }
       }
     }
-    customData?: {
-      type: 'object'
-      properties: Record<string, unknown>
+    dataBindings?: {
+      type: 'array'
+      items: {
+        type: 'object'
+        properties: {
+          target: { type: 'string' }
+          source: { type: 'string' }
+          transform: { type: 'string'; format: 'javascript' }
+        }
+      }
     }
   }
 }
@@ -77,15 +147,22 @@ const baseComponentSchema: Partial<ComponentSchema['properties']> = {
     items: {
       type: 'object',
       properties: {
-        type: { type: 'string' },
+        type: { type: 'string', enum: ['click', 'change', 'input'] },
         handler: { type: 'string' },
         description: { type: 'string' },
       },
     },
   },
-  customData: {
-    type: 'object',
-    properties: {},
+  dataBindings: {
+    type: 'array',
+    items: {
+      type: 'object',
+      properties: {
+        target: { type: 'string' },
+        source: { type: 'string' },
+        transform: { type: 'string', format: 'javascript' },
+      },
+    },
   },
 }
 
@@ -98,6 +175,7 @@ export const componentSchemas: Record<ComponentType, ComponentSchema> = {
       props: {
         type: 'object',
         properties: {
+          text: { type: 'string' },
           type: { type: 'string', enum: ['primary', 'default', 'dashed', 'text', 'link'] },
           size: { type: 'string', enum: ['large', 'middle', 'small'] },
           disabled: { type: 'boolean' },
@@ -119,6 +197,7 @@ export const componentSchemas: Record<ComponentType, ComponentSchema> = {
       props: {
         type: 'object',
         properties: {
+          value: { type: 'string' },
           placeholder: { type: 'string' },
           type: { type: 'string', enum: ['text', 'password', 'number', 'textarea'] },
           size: { type: 'string', enum: ['large', 'middle', 'small'] },
@@ -147,6 +226,7 @@ export const componentSchemas: Record<ComponentType, ComponentSchema> = {
             type: 'array',
             items: {
               type: 'object',
+              required: ['label', 'value'],
               properties: {
                 label: { type: 'string' },
                 value: { type: 'string' },
@@ -476,8 +556,8 @@ export const componentSchemas: Record<ComponentType, ComponentSchema> = {
           offset: {
             type: 'array',
             items: { type: 'number' },
-            minItems: 2,
-            maxItems: 2,
+            minimum: 2,
+            maximum: 2,
           },
           overflowCount: { type: 'number' },
           showZero: { type: 'boolean' },
@@ -544,28 +624,28 @@ export const componentSchemas: Record<ComponentType, ComponentSchema> = {
 
 // 验证组件配置
 export function validateComponent(component: Component, type: ComponentType): boolean {
-  const schema = componentSchemas[type]
-  if (!schema) return false
+  // const schema = componentSchemas[type]
+  // if (!schema) return false
 
-  // 验证必需属性
-  if (!component.id || !component.type || !component.title) {
-    return false
-  }
+  // // 验证必需属性
+  // if (!component.id || !component.type || !component.title) {
+  //   return false
+  // }
 
-  // 验证属性类型
-  if (component.props && schema.properties.props) {
-    // TODO: 实现属性验证逻辑
-  }
+  // // 验证属性类型
+  // if (component.props && schema.properties.props) {
+  //   // TODO: 实现属性验证逻辑
+  // }
 
-  // 验证样式
-  if (component.style && schema.properties.style) {
-    // TODO: 实现样式验证逻辑
-  }
+  // // 验证样式
+  // if (component.style && schema.properties.style) {
+  //   // TODO: 实现样式验证逻辑
+  // }
 
-  // 验证事件
-  if (component.events && schema.properties.events) {
-    // TODO: 实现事件验证逻辑
-  }
+  // // 验证事件
+  // if (component.events && schema.properties.events) {
+  //   // TODO: 实现事件验证逻辑
+  // }
 
   return true
 }

@@ -39,7 +39,7 @@
   outline: 2px dashed #1890ff;
 }
 
-.component-wrapper:hover::before {
+/* .component-wrapper:hover::before {
   content: attr(data-type);
   position: absolute;
   top: -20px;
@@ -51,9 +51,9 @@
   border-radius: 4px;
   font-size: 12px;
   white-space: nowrap;
-}
+} */
 
-.component-wrapper:hover::after {
+/* .component-wrapper:hover::after {
   content: '';
   position: absolute;
   top: -6px;
@@ -62,6 +62,11 @@
   border-width: 4px;
   border-style: solid;
   border-color: #1890ff transparent transparent transparent;
+} */
+.component-content{
+  width: inherit;
+  /* height: inherit; */
+  pointer-events: none;
 }
 
 /* 组件工具栏 */
@@ -223,7 +228,7 @@
   background: #1890ff;
 }
 
-.rotate-handle::before {
+/* .rotate-handle::before {
   content: '';
   position: absolute;
   width: 1px;
@@ -232,7 +237,7 @@
   left: 50%;
   bottom: 100%;
   transform: translateX(-50%);
-}
+} */
 
 /* 组件选中时的动画效果 */
 @keyframes selectedPulse {
@@ -245,10 +250,6 @@
   100% {
     box-shadow: 0 0 0 0 rgba(24, 144, 255, 0);
   }
-}
-
-.component-wrapper.selected {
-  animation: selectedPulse 2s infinite;
 }
 
 /* 组件拖拽放置区域提示 */

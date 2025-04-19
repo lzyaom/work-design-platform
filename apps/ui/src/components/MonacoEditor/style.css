@@ -1,0 +1,174 @@
+/* 编辑器容器 */
+.monaco-editor-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--editor-background, #1e1e1e);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+/* 工具栏 */
+.editor-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  padding: 4px 8px;
+  background: var(--editor-toolbar-background, #252526);
+  border-bottom: 1px solid var(--editor-border-color, #404040);
+}
+
+/* 工具栏按钮 */
+.editor-toolbar-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 8px;
+  color: var(--editor-foreground, #d4d4d4);
+  background: transparent;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.editor-toolbar-button:hover {
+  background-color: var(--editor-toolbar-hover, #2c2c2d);
+}
+
+.editor-toolbar-button:active {
+  background-color: var(--editor-toolbar-active, #383838);
+}
+
+/* 编辑器主体 */
+.editor-content {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 主题变量 - 亮色 */
+[data-theme="light"] .monaco-editor-container {
+  --editor-background: #ffffff;
+  --editor-toolbar-background: #f3f3f3;
+  --editor-border-color: #e0e0e0;
+  --editor-foreground: #000000;
+  --editor-toolbar-hover: #e8e8e8;
+  --editor-toolbar-active: #d4d4d4;
+  --editor-error-background: #fff2f0;
+  --editor-error-border: #ffccc7;
+  --editor-error-color: #cf1322;
+}
+
+/* 主题变量 - 暗色 */
+[data-theme="dark"] .monaco-editor-container {
+  --editor-background: #1e1e1e;
+  --editor-toolbar-background: #252526;
+  --editor-border-color: #404040;
+  --editor-foreground: #d4d4d4;
+  --editor-toolbar-hover: #2c2c2d;
+  --editor-toolbar-active: #383838;
+  --editor-error-background: #2a1215;
+  --editor-error-border: #642824;
+  --editor-error-color: #ff4d4f;
+}
+
+/* 自定义图标 */
+.editor-icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 4px;
+}
+
+.editor-icon-format {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill="%23C5C5C5" d="M4 2h8v1H4V2zm0 11h8v1H4v-1zm9-7H3v1h10V6zm0 3H3v1h10V9z"/></svg>');
+}
+
+/* 编辑器加载状态 */
+.editor-loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--editor-background);
+  z-index: 10;
+}
+
+.editor-loading-spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--editor-foreground);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: editor-spin 0.8s linear infinite;
+}
+
+@keyframes editor-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 错误提示 */
+.editor-error {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  background: var(--editor-error-background);
+  border-top: 1px solid var(--editor-error-border);
+  color: var(--editor-error-color);
+  font-size: 12px;
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+  z-index: 20;
+}
+
+.editor-error.show {
+  transform: translateY(0);
+}
+
+.error-icon {
+  margin-right: 8px;
+  font-size: 14px;
+}
+
+.error-message {
+  flex: 1;
+  margin-right: 16px;
+}
+
+.error-close {
+  padding: 4px;
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.error-close:hover {
+  opacity: 1;
+}
+
+/* 响应式适配 */
+@media (max-width: 640px) {
+  .editor-toolbar {
+    padding: 2px 4px;
+  }
+  
+  .editor-toolbar-button {
+    padding: 2px 4px;
+  }
+
+  .error-message {
+    font-size: 11px;
+  }
+}

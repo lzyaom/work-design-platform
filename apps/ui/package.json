@@ -26,6 +26,7 @@
     "echarts": "catalog:",
     "json-schema": "catalog:",
     "lodash-es": "catalog:",
+    "monaco-editor": "^0.44.0",
     "nprogress": "catalog:",
     "pinia": "catalog:",
     "vue": "catalog:",

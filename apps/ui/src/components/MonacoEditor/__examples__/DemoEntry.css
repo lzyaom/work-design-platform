@@ -1,0 +1,133 @@
+.demo-entry-container {
+  padding: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: var(--bg-color, #f5f5f5);
+}
+
+.demo-entry-card {
+  width: 100%;
+  max-width: 600px;
+  padding: 24px;
+  background: var(--card-bg, #ffffff);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.demo-entry-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.demo-entry-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: var(--primary-color, #1976d2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.demo-entry-icon i {
+  font-size: 24px;
+  color: #ffffff;
+}
+
+.demo-entry-content {
+  flex: 1;
+}
+
+.demo-entry-title {
+  margin: 0 0 8px;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--title-color, #1a1a1a);
+}
+
+.demo-entry-description {
+  margin: 0 0 16px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-color, #666666);
+}
+
+.demo-entry-features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.feature-tag {
+  padding: 4px 8px;
+  background: var(--tag-bg, #e3f2fd);
+  color: var(--primary-color, #1976d2);
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.demo-entry-arrow {
+  font-size: 20px;
+  color: var(--arrow-color, #999999);
+  transition: transform 0.3s ease;
+}
+
+.demo-entry-card:hover .demo-entry-arrow {
+  transform: translateX(4px);
+  color: var(--primary-color, #1976d2);
+}
+
+/* 暗色主题 */
+[data-theme="dark"] .demo-entry-container {
+  --bg-color: #121212;
+  --card-bg: #1e1e1e;
+  --title-color: #ffffff;
+  --text-color: #999999;
+  --tag-bg: #1a237e;
+  --arrow-color: #666666;
+}
+
+/* 响应式设计 */
+@media (max-width: 640px) {
+  .demo-entry-container {
+    padding: 16px;
+  }
+
+  .demo-entry-card {
+    padding: 16px;
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .demo-entry-features {
+    justify-content: center;
+  }
+
+  .demo-entry-arrow {
+    display: none;
+  }
+}
+
+/* 动画效果 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.demo-entry-card {
+  animation: fadeIn 0.5s ease-out;
+}

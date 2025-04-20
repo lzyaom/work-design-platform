@@ -1,4 +1,4 @@
-import { defineComponent, ref, onMounted, onUnmounted } from 'vue'
+import { defineComponent, ref, onMounted, onUnmounted, type CSSProperties } from 'vue'
 import type { Component } from '@/types/component'
 import { useDesignStore } from '@/stores/design'
 import {
@@ -100,8 +100,8 @@ export default defineComponent({
         const deltaX = e.clientX - dragStartPos.value.x
         const deltaY = e.clientY - dragStartPos.value.y
 
-        const newLeft = snapToGrid(parseInt((component.style.left as string) || '0') + deltaX)
-        const newTop = snapToGrid(parseInt((component.style.top as string) || '0') + deltaY)
+        const newLeft = snapToGrid(parseInt((component.style?.left as string) || '0') + deltaX)
+        const newTop = snapToGrid(parseInt((component.style?.top as string) || '0') + deltaY)
 
         designStore.updateComponent({
           ...component,
@@ -122,20 +122,20 @@ export default defineComponent({
       if (!selectedComponent) return lines
 
       const currentRect = {
-        left: parseInt((selectedComponent.style.left as string) || '0') + deltaX,
-        top: parseInt((selectedComponent.style.top as string) || '0') + deltaY,
-        width: parseInt((selectedComponent.style.width as string) || '0'),
-        height: parseInt((selectedComponent.style.height as string) || '0'),
+        left: parseInt((selectedComponent.style?.left as string) || '0') + deltaX,
+        top: parseInt((selectedComponent.style?.top as string) || '0') + deltaY,
+        width: parseInt((selectedComponent.style?.width as string) || '0'),
+        height: parseInt((selectedComponent.style?.height as string) || '0'),
       }
 
       designStore.components.forEach((component) => {
         if (component.id === selectedComponent.id) return
 
         const rect = {
-          left: parseInt((component.style.left as string) || '0'),
-          top: parseInt((component.style.top as string) || '0'),
-          width: parseInt((component.style.width as string) || '0'),
-          height: parseInt((component.style.height as string) || '0'),
+          left: parseInt((component.style?.left as string) || '0'),
+          top: parseInt((component.style?.top as string) || '0'),
+          width: parseInt((component.style?.width as string) || '0'),
+          height: parseInt((component.style?.height as string) || '0'),
         }
 
         // 水平对齐
@@ -205,7 +205,7 @@ export default defineComponent({
 
       // 获取当前旋转角度
       const currentRotation = parseInt(
-        component.style.transform?.replace('rotate(', '').replace('deg)', '') || '0',
+        component.style?.transform?.replace('rotate(', '').replace('deg)', '') || '0',
       )
       rotateStartAngle.value = currentRotation
 
@@ -244,7 +244,7 @@ export default defineComponent({
     // 快速旋转（90度）
     const handleQuickRotate = (component: Component, direction: 'left' | 'right') => {
       const currentRotation = parseInt(
-        component.style.transform?.replace('rotate(', '').replace('deg)', '') || '0',
+        component.style?.transform?.replace('rotate(', '').replace('deg)', '') || '0',
       )
       const newRotation = direction === 'left' ? currentRotation - 90 : currentRotation + 90
 
@@ -320,9 +320,9 @@ export default defineComponent({
       if (deltaX !== 0 || deltaY !== 0) {
         e.preventDefault()
         const newLeft = snapToGrid(
-          parseInt((selectedComponent.style.left as string) || '0') + deltaX,
+          parseInt((selectedComponent.style?.left as string) || '0') + deltaX,
         )
-        const newTop = snapToGrid(parseInt((selectedComponent.style.top as string) || '0') + deltaY)
+        const newTop = snapToGrid(parseInt((selectedComponent.style?.top as string) || '0') + deltaY)
 
         designStore.updateComponent({
           ...selectedComponent,
@@ -347,8 +347,8 @@ export default defineComponent({
         y: e.clientY,
       }
       resizeStartSize.value = {
-        width: parseInt(component.style.width as string),
-        height: parseInt(component.style.height as string),
+        width: parseInt(component.style?.width as string),
+        height: parseInt(component.style?.height as string),
       }
 
       document.addEventListener('mousemove', handleResizeMove)
@@ -388,12 +388,12 @@ export default defineComponent({
           height: `${newSize.height}px`,
           ...(handle.includes('left')
             ? {
-                left: `${snapToGrid(parseInt((component.style.left as string) || '0') + (resizeStartSize.value.width - newSize.width))}px`,
+                left: `${snapToGrid(parseInt((component.style?.left as string) || '0') + (resizeStartSize.value.width - newSize.width))}px`,
               }
             : {}),
           ...(handle.includes('top')
             ? {
-                top: `${snapToGrid(parseInt((component.style.top as string) || '0') + (resizeStartSize.value.height - newSize.height))}px`,
+                top: `${snapToGrid(parseInt((component.style?.top as string) || '0') + (resizeStartSize.value.height - newSize.height))}px`,
               }
             : {}),
         },
@@ -541,7 +541,6 @@ export default defineComponent({
           id: `${component.type}_${Date.now()}`,
           type: component.type,
           title: component.title || schema.title,
-          icon: component.icon || '', // 添加必需的 icon 属性
           props: {
             // 从 schema 中获取默认属性值
             ...Object.entries(schema.properties.props?.properties || {}).reduce(
@@ -654,11 +653,14 @@ export default defineComponent({
             onDrag={handleDrag}
             onDragend={(e: DragEvent) => handleDragEnd(e, component)}
             onClick={(e: MouseEvent) => handleComponentClick(e, component)}
-            style={{
-              position: 'absolute',
-              ...component.style,
-              zIndex: designStore.components.indexOf(component),
-            }}
+            style={
+              {
+                position: 'absolute',
+                ...component.style,
+                zIndex: designStore.components.indexOf(component),
+              } as CSSProperties
+            }
+            data-id={component.id}
           >
             {/* 组件内容 */}
             <ComponentRenderer component={component} class="component-content" />

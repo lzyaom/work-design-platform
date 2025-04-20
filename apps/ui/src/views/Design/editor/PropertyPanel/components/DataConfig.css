@@ -1,0 +1,179 @@
+.data-config {
+  padding: 16px;
+}
+
+/* 数据绑定部分样式 */
+.data-bindings {
+  margin-top: 24px;
+}
+
+.data-bindings-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.data-bindings-header h4 {
+  margin: 0;
+  font-size: 14px;
+  color: #333;
+}
+
+.data-binding-item {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 8px;
+  background-color: #fafafa;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.data-binding-item:hover {
+  background-color: #f0f0f0;
+}
+
+.data-binding-item .target-property,
+.data-binding-item .source-path {
+  width: 100%;
+}
+
+.binding-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.binding-actions .ant-btn {
+  padding: 0 8px;
+}
+
+/* 编辑器模态框样式 */
+.ant-modal-body .monaco-editor {
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+/* 响应式布局 */
+@media screen and (max-width: 768px) {
+  .data-binding-item {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .binding-actions {
+    justify-content: flex-end;
+  }
+}
+
+/* 暗色主题适配 */
+[data-theme='dark'] .data-config {
+  background-color: #141414;
+}
+
+[data-theme='dark'] .data-bindings-header h4 {
+  color: #fff;
+}
+
+[data-theme='dark'] .data-binding-item {
+  background-color: #1f1f1f;
+}
+
+[data-theme='dark'] .data-binding-item:hover {
+  background-color: #2a2a2a;
+}
+
+/* 动画效果 */
+.data-binding-item {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 可访问性增强 */
+.data-binding-item:focus-within {
+  outline: 2px solid #1890ff;
+  outline-offset: 2px;
+}
+
+.data-bindings-header h4 {
+  position: relative;
+}
+
+.data-bindings-header h4:after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #1890ff;
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.data-bindings-header:hover h4:after {
+  transform: scaleX(1);
+}
+
+/* 错误状态样式 */
+.data-binding-item.has-error {
+  border: 1px solid #ff4d4f;
+}
+
+.data-binding-item.has-error:hover {
+  border-color: #ff7875;
+}
+
+/* 加载状态样式 */
+.data-config.loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.data-config.loading::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(2px);
+}
+
+/* 工具提示样式 */
+.binding-actions .ant-btn {
+  position: relative;
+}
+
+.binding-actions .ant-btn::after {
+  content: attr(title);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-4px);
+  padding: 4px 8px;
+  background-color: rgba(0, 0, 0, 0.75);
+  color: white;
+  font-size: 12px;
+  border-radius: 4px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+}
+
+.binding-actions .ant-btn:hover::after {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(-8px);
+}

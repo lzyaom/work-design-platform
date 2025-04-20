@@ -1,0 +1,188 @@
+.event-config {
+  padding: 16px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.events-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.events-header h4 {
+  margin: 0;
+  font-size: 14px;
+  color: #333;
+  font-weight: 500;
+}
+
+.events-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.event-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  background: #fafafa;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+}
+
+.event-item:hover {
+  background: #f0f0f0;
+  border-color: #d9d9d9;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.event-info {
+  display: grid;
+  grid-template-columns: minmax(120px, auto) 1fr;
+  gap: 8px;
+  align-items: start;
+}
+
+.event-desc {
+  margin-top: 4px;
+}
+
+.event-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+  margin-top: 4px;
+  padding-top: 8px;
+  border-top: 1px dashed #f0f0f0;
+}
+
+.event-editor {
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid #d9d9d9;
+}
+
+/* 动画效果 */
+.event-item {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 响应式布局 */
+@media screen and (max-width: 768px) {
+  .event-info {
+    grid-template-columns: 1fr;
+  }
+
+  .event-actions {
+    flex-wrap: wrap;
+  }
+}
+
+/* 深色主题 */
+[data-theme='dark'] .event-config {
+  background-color: #141414;
+}
+
+[data-theme='dark'] .events-header {
+  border-bottom-color: #303030;
+}
+
+[data-theme='dark'] .events-header h4 {
+  color: #fff;
+}
+
+[data-theme='dark'] .event-item {
+  background: #1f1f1f;
+  border-color: #303030;
+}
+
+[data-theme='dark'] .event-item:hover {
+  background: #2a2a2a;
+  border-color: #434343;
+}
+
+[data-theme='dark'] .event-actions {
+  border-top-color: #303030;
+}
+
+[data-theme='dark'] .event-editor {
+  border-color: #434343;
+}
+
+/* 交互状态 */
+.event-item:focus-within {
+  outline: 2px solid #1890ff;
+  outline-offset: 2px;
+}
+
+.event-actions .ant-btn {
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+}
+
+.event-actions .ant-btn:hover {
+  opacity: 1;
+}
+
+/* 工具提示 */
+.event-actions .ant-tooltip {
+  font-size: 12px;
+}
+
+/* 错误状态 */
+.event-item.has-error {
+  border-color: #ff4d4f;
+  background-color: #fff2f0;
+}
+
+[data-theme='dark'] .event-item.has-error {
+  border-color: #a61d24;
+  background-color: #2a1215;
+}
+
+/* 加载状态 */
+.event-config.loading {
+  position: relative;
+  pointer-events: none;
+}
+
+.event-config.loading::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(2px);
+}
+
+[data-theme='dark'] .event-config.loading::after {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+/* 无障碍支持 */
+.event-item:focus-within {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+.event-actions .ant-btn:focus-visible {
+  outline: 2px solid #1890ff;
+  outline-offset: 2px;
+}

@@ -1,54 +1,95 @@
-import type { CSSProperties } from 'vue'
+// 基础值类型
+export type BasicValue = string | number | boolean | null | undefined
+export type PropValue = BasicValue | Record<string, BasicValue> | BasicValue[]
 
-export interface BaseEvent {
-  type: string
-  handler: string
+// 组件样式类型
+export type StyleValue = Partial<CSSStyleDeclaration>
+
+// 数据源类型
+export interface DataSource {
+  id: string
+  type: 'api' | 'static' | 'component'
+  config: {
+    // API数据源配置
+    api?: {
+      url: string
+      method: string
+      params: Record<string, unknown>
+    }
+    // 静态数据配置
+    static?: {
+      data: unknown
+    }
+    // 组件数据源配置
+    component?: {
+      id: string
+      property: string
+    }
+  }
 }
 
-export interface Animation {
-  type: string
-  duration: number
-  delay?: number
-  easing?: string
-}
-
+// 数据绑定类型
 export interface DataBinding {
-  source: string
-  path: string
+  targetProperty: string
+  sourceId: string
+  sourcePath: string
   transform?: string
-  defaultValue?: unknown
 }
 
-export interface BaseComponent {
+// 事件类型
+export type EventType =
+  | 'click'
+  | 'change'
+  | 'input'
+  | 'focus'
+  | 'blur'
+  | 'mounted'
+  | 'updated'
+  | 'custom'
+
+// 事件处理器
+export interface EventHandler {
+  type: EventType
+  name: string
+  description?: string
+  handler: string
+  dependencies?: string[]
+}
+
+// 组件定义
+export interface Component {
   id: string
   type: string
-  title: string
-  icon: string
-  props: Record<string, unknown>
-  style: CSSProperties
-  events?: BaseEvent[]
-  animations?: Animation[]
+  title?: string
+  props: Record<string, PropValue>
+  style?: StyleValue
+  dataSource?: DataSource
   dataBindings?: DataBinding[]
+  events?: EventHandler[]
+  animations?: Animation[]
+  children?: Component[]
 }
 
-export interface Component extends BaseComponent {
-  type: Exclude<string, 'group'>
+// 组件状态
+export interface ComponentState {
+  id: string
+  data: unknown
+  error: Error | null
+  loading: boolean
 }
 
-export interface ComponentGroup extends BaseComponent {
-  type: 'group'
-  children: Component[]
+// 组件事件
+export interface ComponentEvent {
+  componentId: string
+  type: EventType
+  data: unknown
 }
 
-export type ComponentType = Component | ComponentGroup
-
-export interface DesignState {
-  components: ComponentType[]
-  selectedId: string | null
-  selectedIds: string[]
-  clipboard: ComponentType | null
-  history: {
-    past: ComponentType[][]
-    future: ComponentType[][]
-  }
+// 组件上下文
+export interface ComponentContext {
+  id: string
+  refs: Record<string, Component>
+  state: Record<string, ComponentState>
+  emit: (event: ComponentEvent) => void
+  dispatch: (action: unknown) => void
 }

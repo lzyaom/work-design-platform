@@ -1,0 +1,187 @@
+.style-config {
+  padding: 16px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.style-tabs {
+  flex: 1;
+  min-height: 0;
+}
+
+.style-form-item {
+  margin-bottom: 16px;
+}
+
+/* 尺寸输入组件样式 */
+.size-input {
+  display: flex;
+  gap: 8px;
+}
+
+.size-input .ant-input-number {
+  flex: 1;
+}
+
+.size-input .unit-select {
+  width: 80px;
+}
+
+/* 间距输入组件样式 */
+.spacing-input {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  position: relative;
+  padding: 24px;
+}
+
+.spacing-input::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border: 1px dashed #d9d9d9;
+  pointer-events: none;
+}
+
+.spacing-top,
+.spacing-bottom {
+  grid-column: span 2;
+}
+
+.spacing-left {
+  grid-column: 1;
+}
+
+.spacing-right {
+  grid-column: 2;
+}
+
+/* 阴影输入组件样式 */
+.shadow-input {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.shadow-input .ant-input-number {
+  width: 100%;
+}
+
+.shadow-color {
+  min-width: 80px;
+}
+
+/* 标签样式 */
+.style-form-item .ant-form-item-label > label {
+  font-size: 13px;
+  color: #666;
+}
+
+/* 控件样式 */
+.style-form-item .ant-select,
+.style-form-item .ant-input-number {
+  width: 100%;
+}
+
+/* 分组样式 */
+.ant-tabs-content {
+  padding: 8px 0;
+}
+
+.ant-tabs-tabpane {
+  padding-bottom: 24px;
+}
+
+/* 响应式布局 */
+@media screen and (max-width: 768px) {
+  .spacing-input {
+    grid-template-columns: 1fr;
+  }
+
+  .spacing-top,
+  .spacing-bottom {
+    grid-column: 1;
+  }
+
+  .shadow-input {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .shadow-color {
+    grid-column: span 2;
+  }
+}
+
+/* 深色主题 */
+[data-theme='dark'] .style-config {
+  background-color: #141414;
+}
+
+[data-theme='dark'] .style-form-item .ant-form-item-label > label {
+  color: #999;
+}
+
+[data-theme='dark'] .spacing-input::before {
+  border-color: #434343;
+}
+
+/* 可访问性增强 */
+.style-form-item:focus-within {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1);
+  border-radius: 2px;
+}
+
+/* 动画效果 */
+.style-form-item .ant-form-item-control {
+  transition: opacity 0.3s ease;
+}
+
+.style-form-item.ant-form-item-has-error .ant-form-item-control {
+  animation: shake 0.3s ease;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+/* 提示信息 */
+.style-form-item .ant-form-item-explain {
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+/* 状态样式 */
+.style-form-item.is-modified {
+  background-color: rgba(24, 144, 255, 0.04);
+  border-radius: 2px;
+  padding: 4px;
+  margin: -4px -4px 12px;
+}
+
+/* 工具提示 */
+.style-form-item .ant-form-item-label {
+  position: relative;
+}
+
+.style-form-item .ant-form-item-label::after {
+  content: attr(data-tip);
+  position: absolute;
+  top: 100%;
+  left: 0;
+  font-size: 12px;
+  color: #999;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.style-form-item .ant-form-item-label:hover::after {
+  opacity: 1;
+}

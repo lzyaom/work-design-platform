@@ -1,0 +1,146 @@
+.property-panel {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  border-left: 1px solid #f0f0f0;
+  transition: all 0.3s ease;
+}
+
+.property-panel--empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  font-size: 14px;
+}
+
+.property-panel-header {
+  padding: 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.property-panel-header .component-name {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.property-panel-header .component-id {
+  font-size: 12px;
+  color: #999;
+  font-weight: normal;
+  background-color: #f5f5f5;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.property-panel-tabs {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.property-panel-tabs :deep(.ant-tabs-content) {
+  flex: 1;
+  overflow: auto;
+  padding: 0;
+}
+
+.property-panel-tabs :deep(.ant-tabs-nav) {
+  margin: 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.property-panel-tabs :deep(.ant-tabs-tab) {
+  padding: 12px 16px;
+  margin: 0;
+  font-size: 14px;
+}
+
+.property-panel-tabs :deep(.ant-tabs-tab-active) {
+  font-weight: 500;
+}
+
+/* 深色主题 */
+[data-theme='dark'] .property-panel {
+  background-color: #141414;
+  border-color: #303030;
+}
+
+[data-theme='dark'] .property-panel-header {
+  border-color: #303030;
+}
+
+[data-theme='dark'] .property-panel-header .component-name {
+  color: #fff;
+}
+
+[data-theme='dark'] .property-panel-header .component-id {
+  background-color: #1f1f1f;
+  color: #666;
+}
+
+[data-theme='dark'] .property-panel--empty {
+  color: #666;
+}
+
+[data-theme='dark'] .property-panel-tabs :deep(.ant-tabs-nav) {
+  border-color: #303030;
+}
+
+/* 响应式布局 */
+@media screen and (max-width: 768px) {
+  .property-panel-header {
+    padding: 12px;
+  }
+
+  .property-panel-tabs :deep(.ant-tabs-tab) {
+    padding: 8px 12px;
+  }
+}
+
+/* 动画效果 */
+.property-panel-appear {
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* 可访问性增强 */
+.property-panel:focus-within {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+/* 加载状态 */
+.property-panel.is-loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.property-panel.is-loading::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(2px);
+}
+
+[data-theme='dark'] .property-panel.is-loading::after {
+  background: rgba(0, 0, 0, 0.4);
+}
